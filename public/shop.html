@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - munchkin.cro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+    <section id="header">
+        <a href="index.html"><img src="img/logo1.png" alt="munchkin.cro Logo" class="logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="shop.html" class="active">Shop <i class="fa-solid fa-chevron-down dropdown-arrow"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                        <li><a href="shop.html?category=plushies">Plushies</a></li>
+                        <li><a href="shop.html?category=flowers">Flowers</a></li>
+                        <li><a href="shop.html?category=accessories">Accessories</a></li>
+                        <li><a href="shop.html?category=wearables">Wearables</a></li>
+                        <li><a href="shop.html?category=bags">Bags</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="shop-page">
+        <div class="shop-layout">
+
+            <!-- ===== LEFT SIDEBAR FILTERS ===== -->
+            <aside class="filter-sidebar">
+                <h3>Filter</h3>
+
+                <!-- Category -->
+                <div class="filter-group">
+                    <h4>Category</h4>
+                    <label><input type="radio" name="category" value="all" checked> All</label>
+                    <label><input type="radio" name="category" value="keyrings"> Keyrings</label>
+                    <label><input type="radio" name="category" value="plushies"> Plushies</label>
+                    <label><input type="radio" name="category" value="flowers"> Flowers</label>
+                    <label><input type="radio" name="category" value="accessories"> Accessories</label>
+                    <label><input type="radio" name="category" value="wearables"> Wearables</label>
+                    <label><input type="radio" name="category" value="bags"> Bags</label>
+                </div>
+
+                <!-- Price Range -->
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <label><input type="radio" name="price" value="all" checked> All Prices</label>
+                    <label><input type="radio" name="price" value="0-500"> Under Tk 200</label>
+                    <label><input type="radio" name="price" value="500-1000"> Tk 200 – Tk 500</label>
+                    <label><input type="radio" name="price" value="1000-1500"> Tk 500 – Tk 1000</label>
+                    <label><input type="radio" name="price" value="1500-9999"> Above Tk 1000</label>
+                </div>
+
+                <!-- Color -->
+                <div class="filter-group">
+                    <h4>Color</h4>
+                    <div class="color-filter-swatches">
+                        <span class="color-swatch active" data-color="all" style="background: linear-gradient(135deg,#ff869c,#a8d8ea,#ffd166,#b5ead7);" title="All"></span>
+                        <span class="color-swatch" data-color="pink" style="background:#ff869c;" title="Pink"></span>
+                        <span class="color-swatch" data-color="white" style="background:#f5f5f5; border:1px solid #ddd;" title="White"></span>
+                        <span class="color-swatch" data-color="blue" style="background:#a8d8ea;" title="Blue"></span>
+                        <span class="color-swatch" data-color="yellow" style="background:#ffd166;" title="Yellow"></span>
+                        <span class="color-swatch" data-color="green" style="background:#b5ead7;" title="Green"></span>
+                        <span class="color-swatch" data-color="purple" style="background:#c3b1e1;" title="Purple"></span>
+                        <span class="color-swatch" data-color="brown" style="background:#c8a882;" title="Brown"></span>
+                    </div>
+                </div>
+
+                <button class="clear-filters-btn" onclick="clearFilters()">Clear Filters</button>
+            </aside>
+
+            <!-- ===== RIGHT PRODUCT AREA ===== -->
+            <div class="shop-main">
+
+                <!-- Sort bar -->
+                <div class="shop-topbar">
+                    <p id="resultCount">Showing all products</p>
+                    <select id="sortSelect" onchange="applyFilters()">
+                        <option value="default">Sort: Default</option>
+                        <option value="price-asc">Price: Low to High</option>
+                        <option value="price-desc">Price: High to Low</option>
+                        <option value="name-asc">Name: A–Z</option>
+                    </select>
+                </div>
+
+                <!-- Product Grid -->
+                <div class="shop-grid" id="shopGrid">
+
+                    <!--
+                        HOW TO ADD A PRODUCT:
+                        Copy one .pro block below and fill in:
+                        - data-category   : keyrings / plushies / flowers / accessories / wearables / bags
+                        - data-price      : number (e.g. 35)
+                        - data-colors     : comma-separated colors available (e.g. "pink,white,blue")
+                        - img src         : your image path
+                        - category-tag    : display text
+                        - h4              : product name
+                        - .price          : Tk XX.00
+                        - addToCart()     : name and price
+                        - color swatches  : one per available color
+                    -->
+
+                    <div class="pro" data-category="plushies" data-price="550" data-colors="yellow">
+                        <img src="img/chef_chick.jpeg" alt="Chick Plushie">
+                        <div class="des">
+                            <span class="category-tag">Plushies</span>
+                            <h4>Michelin Chick Plush</h4>
+                            <p class="price">Tk 550.00</p>
+
+                            <!-- Color Picker -->
+                            <div class="color-picker">
+                                <p class="color-label">Color: <span class="chosen-color">Yellow</span></p>
+                                <div class="color-options">
+                                    <span class="color-dot" data-color="Yellow" style="background:#ffd166;" title="Yellow"></span>   
+                                </div>
+                            </div>
+
+                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Michelin Chick Plush', 550)">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- EXAMPLE 2 — Keyring -->
+                    <div class="pro" data-category="keyrings" data-price="280" data-colors="pink,blue,green">
+                        <img src="img/flower_chick.png" alt="Flower Keyring">
+                        <div class="des">
+                            <span class="category-tag">Keyrings</span>
+                            <h4>Flower Keyring</h4>
+                            <p class="price">Tk 280.00</p>
+                            <div class="color-picker">
+                                <p class="color-label">Color: <span class="chosen-color">Pink</span></p>
+                                <div class="color-options">
+                                    <span class="color-dot selected" data-color="Pink" style="background:#ff869c;" title="Pink"></span>
+                                    <span class="color-dot" data-color="Blue" style="background:#a8d8ea;" title="Blue"></span>
+                                    <span class="color-dot" data-color="Green" style="background:#b5ead7;" title="Green"></span>
+                                </div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Flower Keyring', 280)">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- EXAMPLE 3 — Bag -->
+                    <div class="pro" data-category="bags" data-price="3500" data-colors="white,purple,brown">
+                        <img src="img/Shell_stitch_bag.jpeg" alt="Shell Stitch Bag">
+                        <div class="des">
+                            <span class="category-tag">Bags</span>
+                            <h4>Shell Stitch Bag</h4>
+                            <p class="price">Tk 3500.00</p>
+                            <div class="color-picker">
+                                <p class="color-label">Color: <span class="chosen-color">White</span></p>
+                                <div class="color-options">
+                                    <span class="color-dot selected" data-color="White" style="background:#f5f5f5; border:1px solid #ddd;" title="White"></span>
+                                    <span class="color-dot" data-color="Purple" style="background:#c3b1e1;" title="Purple"></span>
+                                    <span class="color-dot" data-color="Brown" style="background:#c8a882;" title="Brown"></span>
+                                </div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Shell Stitch Bag', 3500)">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pro" data-category="flowers" data-price="280" data-colors="pink,blue,purple">
+                        <img src="img/Tulips.png" alt="Tulips">
+                        <div class="des">
+                            <span class="category-tag">Flowers</span>
+                            <h4>Tulips</h4>
+                            <p class="price">Tk 280.00</p>
+                            <div class="color-picker">
+                                <p class="color-label">Color: <span class="chosen-color">Pink</span></p>
+                                <div class="color-options">
+                                    <span class="color-dot selected" data-color="Pink" style="background:#ff869c;" title="Pink"></span>
+                                    <span class="color-dot" data-color="Yellow" style="background:#ffd166;" title="Yellow"></span> 
+                                    <span class="color-dot" data-color="Blue" style="background:#a8d8ea;" title="Blue"></span>
+                                    <span class="color-dot" data-color="Purple" style="background:#c3b1e1;" title="Purple"></span>
+                                </div>
+                            </div>
+                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Tulips', 280)">
+                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>             
+
+                <!-- No results message -->
+                <div id="noResults" style="display:none;" class="no-results">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <p>No products match your filters.</p>
+                    <button onclick="clearFilters()">Clear Filters</button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
+                <p class="footer-tagline">Crochet made with love, just for you.</p>
+                <div class="footer-info">
+                    <p>🚚 Delivery within: 14 days</p>
+                    <p>✉️ munchkincro@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="shop.html?category=plushies">Plushies</a></li>
+                    <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                    <li><a href="shop.html?category=accessories">Accessories</a></li>
+                    <li><a href="shop.html?category=wearables">Wearables</a></li>
+                    <li><a href="shop.html?category=bags">Bags</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Stay Connected</h4>
+                <ul class="footer-socials">
+                    <li><a href="https://instagram.com/munchkin.cro" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://facebook.com/munchkincro" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 munchkin.cro · All rights reserved</p>
+        </div>
+    </footer>
+
+
+<!-- Chat Bubble Button -->
+<div id="chat-bubble" onclick="toggleChat()">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="chat-bubble-pulse"></span>
+</div>
+ 
+<!-- Chat Popup Window -->
+<div id="chat-popup" class="chat-popup hidden">
+ 
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <img src="img/logo1.png" alt="munchkin.cro" class="chat-avatar">
+            <div>
+                <h4>munchkin.cro</h4>
+                <span class="chat-status"><span class="status-dot"></span> Usually replies within 1 hour</span>
+            </div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+ 
+    <!-- Chat Body -->
+    <div class="chat-body">
+        <!-- Welcome bubble -->
+        <div class="chat-message incoming">
+            <p>Hii! HiiWelcome to <strong>munchkin.cro</strong>!</p>
+            <p>How can I help you today? Pick an option below or type your own message on WhatsApp 💬</p>
+        </div>
+ 
+        <!-- Quick options -->
+        <div class="chat-options">
+            <button onclick="sendToWhatsApp('Hi! I would like to ask about an order')">
+                Order Enquiry
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I want to customise a product')">
+                Customise a Product
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I have a question about delivery')">
+                Delivery Question
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I want to know what colours are available')">
+                Colour Options
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I need help with something else ')">
+                Other Question
+            </button>
+        </div>
+    </div>
+ 
+    <!-- Footer -->
+    <div class="chat-footer">
+        <p>Tap an option to open WhatsApp</p>
+        <a class="whatsapp-main-btn" href="https://wa.me/8801576652249" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> Open WhatsApp
+        </a>
+    </div>
+ 
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>

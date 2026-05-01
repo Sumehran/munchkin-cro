@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - munchkin.cro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+    <section id="header">
+        <a href="index.html"><img src="img/logo1.png" alt="munchkin.cro Logo" class="logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="shop.html">Shop <i class="fa-solid fa-chevron-down dropdown-arrow"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                        <li><a href="shop.html?category=plushies">Plushies</a></li>
+                        <li><a href="shop.html?category=flowers">Flowers</a></li>
+                        <li><a href="shop.html?category=accessories">Accessories</a></li>
+                        <li><a href="shop.html?category=wearables">Wearables</a></li>
+                        <li><a href="shop.html?category=bags">Bags</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="cart.html" class="active"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Cart Page -->
+    <section id="cart-page">
+        <h1>Your Cart 🛒</h1>
+
+        <div class="cart-layout">
+
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartItems">
+                <!-- Items injected by JS -->
+                <div class="cart-empty" id="emptyMsg">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                    <p>Your cart is empty!</p>
+                    <a href="shop.html"><button>Start Shopping</button></a>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="cart-summary">
+                <h3>Order Summary</h3>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">Tk 0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery</span>
+                    <span id="delivery">Tk 0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="total">Tk 0.00</span>
+                </div>
+                <button class="checkout-btn" id="checkoutBtn" onclick="checkout()">
+                    Proceed to Checkout
+                </button>
+                <a href="shop.html" class="continue-link">← Continue Shopping</a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
+                <p class="footer-tagline">Crochet made with love, just for you.</p>
+                <div class="footer-info">
+                    <p>🚚 Delivery within: 14 days</p>
+                    <p>✉️ munchkincro@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="shop.html?category=plushies">Plushies</a></li>
+                    <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                    <li><a href="shop.html?category=accessories">Accessories</a></li>
+                    <li><a href="shop.html?category=wearables">Wearables</a></li>
+                    <li><a href="shop.html?category=bags">Bags</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Stay Connected</h4>
+                <ul class="footer-socials">
+                    <li><a href="https://instagram.com/munchkin.cro" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://facebook.com/munchkincro" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 munchkin.cro · All rights reserved</p>
+        </div>
+    </footer>
+
+<!-- Chat Bubble Button -->
+<div id="chat-bubble" onclick="toggleChat()">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="chat-bubble-pulse"></span>
+</div>
+ 
+<!-- Chat Popup Window -->
+<div id="chat-popup" class="chat-popup hidden">
+ 
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <img src="img/logo1.png" alt="munchkin.cro" class="chat-avatar">
+            <div>
+                <h4>munchkin.cro</h4>
+                <span class="chat-status"><span class="status-dot"></span> Usually replies within 1 hour</span>
+            </div>
+        </div>
+        <button class="chat-close" onclick="toggleChat()">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+ 
+    <!-- Chat Body -->
+    <div class="chat-body">
+        <!-- Welcome bubble -->
+        <div class="chat-message incoming">
+            <p>Hii! HiiWelcome to <strong>munchkin.cro</strong>!</p>
+            <p>How can I help you today? Pick an option below or type your own message on WhatsApp 💬</p>
+        </div>
+ 
+        <!-- Quick options -->
+        <div class="chat-options">
+            <button onclick="sendToWhatsApp('Hi! I would like to ask about an order')">
+                Order Enquiry
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I want to customise a product')">
+                Customise a Product
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I have a question about delivery')">
+                Delivery Question
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I want to know what colours are available')">
+                Colour Options
+            </button>
+            <button onclick="sendToWhatsApp('Hi! I need help with something else ')">
+                Other Question
+            </button>
+        </div>
+    </div>
+ 
+    <!-- Footer -->
+    <div class="chat-footer">
+        <p>Tap an option to open WhatsApp</p>
+        <a class="whatsapp-main-btn" href="https://wa.me/8801576652249" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i> Open WhatsApp
+        </a>
+    </div>
+ 
+</div>
+
+    <script src="script.js"></script>
+    <script>
+        renderCart();
+
+        function renderCart() {
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            const container = document.getElementById('cartItems');
+            const emptyMsg = document.getElementById('emptyMsg');
+
+            if (cart.length === 0) {
+                emptyMsg.style.display = 'flex';
+                updateSummary(0);
+                return;
+            }
+
+            emptyMsg.style.display = 'none';
+
+            // Remove old items (keep emptyMsg)
+            const existing = container.querySelectorAll('.cart-item');
+            existing.forEach(el => el.remove());
+
+            let subtotal = 0;
+            cart.forEach((item, index) => {
+                subtotal += item.price * item.qty;
+                const div = document.createElement('div');
+                div.className = 'cart-item';
+                div.innerHTML = `
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p class="price">Tk ${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="cart-item-qty">
+                        <button onclick="changeQty(${index}, -1)">−</button>
+                        <span>${item.qty}</span>
+                        <button onclick="changeQty(${index}, 1)">+</button>
+                    </div>
+                    <p class="cart-item-total">Tk ${(item.price * item.qty).toFixed(2)}</p>
+                    <button class="remove-btn" onclick="removeItem(${index})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                container.appendChild(div);
+            });
+
+            updateSummary(subtotal);
+        }
+
+        function updateSummary(subtotal) {
+            const delivery = subtotal > 0 ? 100 : 0;
+            document.getElementById('subtotal').textContent = `Tk ${subtotal.toFixed(2)}`;
+            document.getElementById('delivery').textContent = `Tk ${delivery.toFixed(2)}`;  // ← add this
+            document.getElementById('total').textContent = `Tk ${(subtotal + delivery).toFixed(2)}`;
+}
+
+        function changeQty(index, delta) {
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) cart.splice(index, 1);
+            localStorage.setItem('munchkin-cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function removeItem(index) {
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('munchkin-cart', JSON.stringify(cart));
+            renderCart();
+        }
+
+        function checkout() {
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            alert('Thank you for your order! HiiWe will contact you via Instagram/Facebook to confirm.');
+        }
+    </script>
+</body>
+</html>
