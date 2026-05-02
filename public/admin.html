@@ -296,6 +296,9 @@
                             <option ${o.status==='Completed'?'selected':''}>Completed</option>
                             <option ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
                         </select>
+                        <button class="notify-btn" onclick="notifyCustomer('${o.id}', '${o.status}')">
+                            <i class="fa-brands fa-whatsapp"></i> Notify
+                        </button>
                     </td>
                 </tr>
             `).join('');

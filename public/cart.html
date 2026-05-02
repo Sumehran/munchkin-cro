@@ -26,6 +26,7 @@
                     </ul>
                 </li>
                 <li><a href="about.html">About Us</a></li>
+                <li><a href="track-order.html">Track Order</a></li>
                 <li><a href="cart.html" class="active"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
             </ul>
         </div>
@@ -97,6 +98,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="shop.html">Shop</a></li>
                     <li><a href="about.html">About Us</a></li>
+                    <li><a href="track-order.html">Track Order</a></li>
                     <li><a href="cart.html">Cart</a></li>
                 </ul>
             </div>
@@ -221,11 +223,14 @@
             updateSummary(subtotal);
         }
 
-        function updateSummary(subtotal) {
-            const delivery = subtotal > 0 ? 100 : 0;
-            document.getElementById('subtotal').textContent = `Tk ${subtotal.toFixed(2)}`;
-            document.getElementById('delivery').textContent = `Tk ${delivery.toFixed(2)}`;  // ← add this
-            document.getElementById('total').textContent = `Tk ${(subtotal + delivery).toFixed(2)}`;
+function updateSummary(subtotal) {
+    const delivery = subtotal > 0 ? getShippingCost() : 0;
+    const subtotalEl  = document.getElementById('subtotal');
+    const deliveryEl  = document.getElementById('delivery');
+    const totalEl     = document.getElementById('total');
+    if (subtotalEl) subtotalEl.textContent = `৳ ${subtotal.toFixed(2)}`;
+    if (deliveryEl) deliveryEl.textContent = `৳ ${delivery.toFixed(2)}`;
+    if (totalEl)    totalEl.textContent    = `৳ ${(subtotal + delivery).toFixed(2)}`;
 }
 
         function changeQty(index, delta) {

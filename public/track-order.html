@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Order - munchkin.cro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+    <section id="header">
+        <a href="index.html"><img src="img/logo1.png" alt="munchkin.cro Logo" class="logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="shop.html">Shop <i class="fa-solid fa-chevron-down dropdown-arrow"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                        <li><a href="shop.html?category=plushies">Plushies</a></li>
+                        <li><a href="shop.html?category=flowers">Flowers</a></li>
+                        <li><a href="shop.html?category=accessories">Accessories</a></li>
+                        <li><a href="shop.html?category=wearables">Wearables</a></li>
+                        <li><a href="shop.html?category=bags">Bags</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="custom-order.html">Custom Order</a></li>
+                <li><a href="track-order.html">Track Order</a></li>
+                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="track-order-page">
+
+        <div class="track-hero">
+            <h1>📦 Track Your Order</h1>
+            <p>Enter your Order ID or phone number to see your order status</p>
+        </div>
+
+        <!-- Search Box -->
+        <div class="track-search-box">
+            <div class="track-input-wrap">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="track-input" placeholder="Enter Order ID or phone number (e.g. 01712345678)">
+            </div>
+            <button onclick="trackOrder()">Track Order</button>
+        </div>
+
+        <p id="track-error" class="auth-error" style="text-align:center;"></p>
+
+        <!-- Result -->
+        <div id="track-result" style="display:none;">
+
+            <!-- Order Summary -->
+            <div class="track-order-card">
+                <div class="track-order-header">
+                    <div>
+                        <h3>Order #<span id="tr-id"></span></h3>
+                        <p id="tr-date" class="tr-meta"></p>
+                    </div>
+                    <span class="status-badge" id="tr-status-badge"></span>
+                </div>
+
+                <div class="track-order-body">
+                    <div class="tr-detail-row">
+                        <i class="fa-solid fa-user"></i>
+                        <span id="tr-customer"></span>
+                    </div>
+                    <div class="tr-detail-row">
+                        <i class="fa-solid fa-phone"></i>
+                        <span id="tr-phone"></span>
+                    </div>
+                    <div class="tr-detail-row">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span id="tr-address"></span>
+                    </div>
+                    <div class="tr-detail-row">
+                        <i class="fa-solid fa-box"></i>
+                        <span id="tr-items"></span>
+                    </div>
+                    <div class="tr-detail-row">
+                        <i class="fa-solid fa-bangladeshi-taka-sign"></i>
+                        <strong id="tr-total"></strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Tracker -->
+            <div class="order-progress">
+                <h3>Order Progress</h3>
+                <div class="progress-steps" id="progress-steps">
+                    <div class="progress-step" data-step="Pending">
+                        <div class="step-icon"><i class="fa-solid fa-clock"></i></div>
+                        <div class="step-label">Order Placed</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="Processing">
+                        <div class="step-icon"><i class="fa-solid fa-scissors"></i></div>
+                        <div class="step-label">Being Crafted</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="Shipped">
+                        <div class="step-icon"><i class="fa-solid fa-truck"></i></div>
+                        <div class="step-label">Shipped</div>
+                    </div>
+                    <div class="progress-connector"></div>
+                    <div class="progress-step" data-step="Completed">
+                        <div class="step-icon"><i class="fa-solid fa-heart"></i></div>
+                        <div class="step-label">Delivered</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            <div class="status-message-box" id="status-message-box">
+                <i class="fa-solid fa-circle-info"></i>
+                <p id="status-message-text"></p>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="track-contact">
+                <p>Questions about your order?</p>
+                <a href="https://wa.me/8801576652249" target="_blank" class="whatsapp-confirm-btn" style="display:inline-flex; text-decoration:none; padding:12px 24px; font-size:14px;">
+                    <i class="fa-brands fa-whatsapp"></i> Chat with us on WhatsApp
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
+                <p class="footer-tagline">Crochet made with love, just for you.</p>
+                <div class="footer-info">
+                    <p>🚚 Delivery within: 14 days</p>
+                    <p>✉️ munchkincro@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="custom-order.html">Custom Order</a></li>
+                    <li><a href="track-order.html">Track Order</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Stay Connected</h4>
+                <ul class="footer-socials">
+                    <li><a href="https://www.instagram.com/munchkin.cro/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.facebook.com/munchkincro" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom"><p>© 2025 munchkin.cro · All rights reserved</p></div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        function trackOrder() {
+            const input = document.getElementById('track-input').value.trim();
+            const errorEl = document.getElementById('track-error');
+            errorEl.textContent = '';
+
+            if (!input) { errorEl.textContent = 'Please enter an Order ID or phone number.'; return; }
+
+            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
+            const order = orders.find(o =>
+                String(o.id) === input ||
+                (o.phone && o.phone.replace(/\D/g,'').includes(input.replace(/\D/g,'')))
+            );
+
+            if (!order) {
+                errorEl.textContent = 'No order found. Please check your Order ID or phone number.';
+                document.getElementById('track-result').style.display = 'none';
+                return;
+            }
+
+            showOrderResult(order);
+        }
+
+        // Also allow pressing Enter
+        document.getElementById('track-input').addEventListener('keydown', e => {
+            if (e.key === 'Enter') trackOrder();
+        });
+
+        // Auto-track from URL param (e.g. after checkout)
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('id')) {
+            document.getElementById('track-input').value = params.get('id');
+            trackOrder();
+        }
+
+        function showOrderResult(order) {
+            document.getElementById('track-result').style.display = 'block';
+
+            document.getElementById('tr-id').textContent       = order.id;
+            document.getElementById('tr-date').textContent     = `Placed on ${order.date}`;
+            document.getElementById('tr-customer').textContent = order.customer;
+            document.getElementById('tr-phone').textContent    = order.phone || '—';
+            document.getElementById('tr-address').textContent  = order.address || '—';
+            document.getElementById('tr-items').textContent    = order.items;
+            document.getElementById('tr-total').textContent    = `৳ ${order.total}`;
+
+            // Status badge
+            const badge = document.getElementById('tr-status-badge');
+            badge.textContent = order.status;
+            badge.className = `status-badge ${order.status.toLowerCase()}`;
+
+            // Progress steps
+            const stepOrder = ['Pending', 'Processing', 'Shipped', 'Completed'];
+            const currentIndex = stepOrder.indexOf(order.status);
+
+            document.querySelectorAll('.progress-step').forEach((step, i) => {
+                step.classList.remove('done', 'active', 'inactive');
+                if (i < currentIndex) step.classList.add('done');
+                else if (i === currentIndex) step.classList.add('active');
+                else step.classList.add('inactive');
+            });
+
+            document.querySelectorAll('.progress-connector').forEach((conn, i) => {
+                conn.classList.toggle('filled', i < currentIndex);
+            });
+
+            // Status messages
+            const messages = {
+                'Pending':    '⏳ Your order has been received! We\'ll start crafting it soon.',
+                'Processing': '🧶 Your order is being handcrafted with love! We\'ll notify you when it ships.',
+                'Shipped':    '🚚 Your order is on its way! Expected delivery within a few days.',
+                'Completed':  '🎀 Your order has been delivered! We hope you love it. Please leave us a review!',
+                'Cancelled':  '❌ This order has been cancelled. Contact us on WhatsApp for help.'
+            };
+            document.getElementById('status-message-text').textContent =
+                messages[order.status] || 'Order status updated.';
+
+            document.getElementById('track-result').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
