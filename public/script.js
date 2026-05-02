@@ -25,6 +25,48 @@
 //         const matchBtn = document.querySelector(`.filter-btn[data-category="${cat}"]`);
 //         if (matchBtn) matchBtn.click();
 //     }
+// =====================================================
+// PASTE THIS AT THE TOP OF YOUR script.js
+// (Replace your existing DEFAULT_PRODUCTS if you have one)
+// =====================================================
+ 
+const DEFAULT_PRODUCTS = [
+    {
+        name: 'Chick holding Flower',
+        category: 'keyrings',
+        price: 350,
+        colors: 'pink,white,yellow',
+        image: 'img/flower_chick.png',
+        images: ['img/flower_chick.png'],
+        description: 'An adorable handmade crochet chick holding a tiny flower — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. 🐣',
+        materials: ['100% cotton yarn', 'Hypoallergenic polyfill stuffing', 'Metal keyring clip', 'Safety eyes (6mm)'],
+        dimensions: 'Approximately 8–10 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Tulips',
+        category: 'flowers',
+        price: 280,
+        colors: 'pink,blue,purple,yellow',
+        image: 'img/Tulips.png',
+        images: ['img/Tulips.png'],
+        description: 'Beautiful handmade crochet tulips that never wilt! A perfect gift for any occasion — birthdays, Eid, or just because. Available in a variety of colours. 🌷',
+        materials: ['100% acrylic yarn', 'Floral wire stem', 'Green yarn wrapping', 'Optional ribbon bow'],
+        dimensions: 'Stem height approximately 25–30 cm. Flower head approximately 5–6 cm wide.'
+    },
+    {
+        name: 'Bear Wallet',
+        category: 'accessories',
+        price: 650,
+        colors: 'brown,white,pink',
+        image: 'img/bear_wallet.jpeg',
+        images: ['img/bear_wallet.jpeg'],
+        description: 'A super cute crochet bear-face wallet — spacious enough for cards and cash, and adorable enough to carry everywhere! Handstitched details make every piece unique. 🐻',
+        materials: ['100% cotton yarn', 'Zipper closure', 'Inner lining fabric', 'Safety eyes (8mm)', 'Embroidered nose and mouth'],
+        dimensions: 'Approximately 12 × 9 cm when closed. Fits cards, folded notes, and small items.'
+    }
+    // Add more products here following the same format
+];
+ 
      // ── Color dot picker ──────────────────────────────────────────
         document.querySelectorAll('.color-options').forEach(group => {
             group.querySelectorAll('.color-dot').forEach(dot => {
@@ -44,58 +86,75 @@
         }
 
         // ── Filter logic ──────────────────────────────────────────────
-        function applyFilters() {
-            const category = document.querySelector('input[name="category"]:checked').value;
-            const priceRange = document.querySelector('input[name="price"]:checked').value;
-            const activeColor = document.querySelector('.color-swatch.active').dataset.color;
-            const sort = document.getElementById('sortSelect').value;
-
-            let products = Array.from(document.querySelectorAll('.shop-grid .pro'));
-
-            // Filter
-            let visible = products.filter(pro => {
-                const pCat = pro.dataset.category;
-                const pPrice = parseFloat(pro.dataset.price);
-                const pColors = pro.dataset.colors.split(',');
-
-                const catMatch = category === 'all' || pCat === category;
-
-                let priceMatch = true;
-                if (priceRange !== 'all') {
-                    const [min, max] = priceRange.split('-').map(Number);
-                    priceMatch = pPrice >= min && pPrice <= max;
-                }
-
-                const colorMatch = activeColor === 'all' || pColors.includes(activeColor);
-
-                return catMatch && priceMatch && colorMatch;
-            });
-
-            // Sort
-            visible.sort((a, b) => {
-                const aPrice = parseFloat(a.dataset.price);
-                const bPrice = parseFloat(b.dataset.price);
-                const aName = a.querySelector('h4').textContent;
-                const bName = b.querySelector('h4').textContent;
-                if (sort === 'price-asc') return aPrice - bPrice;
-                if (sort === 'price-desc') return bPrice - aPrice;
-                if (sort === 'name-asc') return aName.localeCompare(bName);
-                return 0;
-            });
-
-            // Show/hide
-            products.forEach(p => p.style.display = 'none');
-            visible.forEach(p => p.style.display = 'block');
-
-            // Re-order in DOM
-            const grid = document.getElementById('shopGrid');
-            visible.forEach(p => grid.appendChild(p));
-
-            // Result count
-            document.getElementById('resultCount').textContent =
-                visible.length === 0 ? 'No products found' : `Showing ${visible.length} product${visible.length > 1 ? 's' : ''}`;
-            document.getElementById('noResults').style.display = visible.length === 0 ? 'flex' : 'none';
+// =====================================================
+// PRICE FILTER FIX
+// Replace your existing applyFilters() function
+// with this corrected version
+// =====================================================
+ 
+function applyFilters() {
+    const category   = document.querySelector('input[name="category"]:checked')?.value || 'all';
+    const priceRange = document.querySelector('input[name="price"]:checked')?.value || 'all';
+    const activeColor = document.querySelector('.color-swatch.active')?.dataset.color || 'all';
+    const sort = document.getElementById('sortSelect')?.value || 'default';
+ 
+    let products = Array.from(document.querySelectorAll('.shop-grid .pro'));
+ 
+    let visible = products.filter(pro => {
+        const pCat   = (pro.dataset.category || '').trim().toLowerCase();
+        const pPrice = parseFloat(pro.dataset.price) || 0;
+        const pColors = (pro.dataset.colors || '').split(',').map(c => c.trim().toLowerCase());
+ 
+        // Category match
+        const catMatch = category === 'all' || pCat === category.toLowerCase();
+ 
+        // Price match — FIX: parse correctly and handle edge cases
+        let priceMatch = true;
+        if (priceRange !== 'all') {
+            const parts = priceRange.split('-');
+            const min = parseFloat(parts[0]) || 0;
+            const max = parseFloat(parts[1]) || Infinity;
+            priceMatch = pPrice >= min && pPrice <= max;
         }
+ 
+        // Color match — FIX: case-insensitive comparison
+        const colorMatch = activeColor === 'all' ||
+            pColors.includes(activeColor.toLowerCase());
+ 
+        return catMatch && priceMatch && colorMatch;
+    });
+ 
+    // Sort
+    visible.sort((a, b) => {
+        const aPrice = parseFloat(a.dataset.price) || 0;
+        const bPrice = parseFloat(b.dataset.price) || 0;
+        const aName  = a.querySelector('h4')?.textContent || '';
+        const bName  = b.querySelector('h4')?.textContent || '';
+        if (sort === 'price-asc')  return aPrice - bPrice;
+        if (sort === 'price-desc') return bPrice - aPrice;
+        if (sort === 'name-asc')   return aName.localeCompare(bName);
+        return 0;
+    });
+ 
+    // Show/hide
+    products.forEach(p => p.style.display = 'none');
+    visible.forEach(p => {
+        p.style.display = 'block';
+        document.getElementById('shopGrid').appendChild(p);
+    });
+ 
+    // Count
+    const countEl = document.getElementById('resultCount');
+    if (countEl) {
+        countEl.textContent = visible.length === 0
+            ? 'No products found'
+            : `Showing ${visible.length} product${visible.length !== 1 ? 's' : ''}`;
+    }
+ 
+    const noResults = document.getElementById('noResults');
+    if (noResults) noResults.style.display = visible.length === 0 ? 'flex' : 'none';
+}
+ 
 
         // ── Color swatch filter click ──────────────────────────────────
         document.querySelectorAll('.color-swatch').forEach(swatch => {
@@ -249,3 +308,108 @@ function logoutUser() {
 
 // Run on every page
 updateNavAuth();
+
+// =====================================================
+// RENDER SHOP PRODUCTS DYNAMICALLY
+// (Products are clickable — go to product.html)
+// =====================================================
+ 
+function renderShopProducts() {
+    const grid = document.getElementById('shopGrid');
+    if (!grid) return;
+ 
+    const adminProducts = JSON.parse(localStorage.getItem('munchkin-products')) || [];
+    const allProducts   = [...DEFAULT_PRODUCTS, ...adminProducts];
+ 
+    const colorMap = {
+        pink: '#ff869c', white: '#f5f5f5', blue: '#a8d8ea',
+        yellow: '#ffd166', green: '#b5ead7', purple: '#c3b1e1',
+        brown: '#c8a882', red: '#ff6b6b', black: '#333333', orange: '#ffb347'
+    };
+ 
+    grid.innerHTML = allProducts.map(p => {
+        const colors     = p.colors ? p.colors.split(',').map(c => c.trim()) : [];
+        const firstColor = colors[0] || '';
+ 
+        const colorDots = colors.map((color, i) => {
+            const bg     = colorMap[color.toLowerCase()] || '#ccc';
+            const border = color.toLowerCase() === 'white' ? 'border:1px solid #ddd;' : '';
+            return `<span class="color-dot ${i === 0 ? 'selected' : ''}"
+                        data-color="${color.charAt(0).toUpperCase() + color.slice(1)}"
+                        style="background:${bg};${border}"
+                        title="${color}">
+                    </span>`;
+        }).join('');
+ 
+        // Get average rating
+        const reviews = JSON.parse(localStorage.getItem(`reviews-${p.name}`)) || [];
+        const avgRating = reviews.length
+            ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+            : null;
+        const ratingHtml = avgRating
+            ? `<p class="card-rating"><i class="fa-solid fa-star" style="color:#f4a637;font-size:11px;"></i> ${avgRating} (${reviews.length})</p>`
+            : '';
+ 
+        return `
+            <div class="pro"
+                data-category="${p.category}"
+                data-price="${p.price}"
+                data-colors="${p.colors || ''}"
+                onclick="window.location.href='product.html?name=${encodeURIComponent(p.name)}'">
+                <img src="${p.image || 'img/logo1.png'}" alt="${p.name}"
+                     onerror="this.src='img/logo1.png'">
+                <div class="des">
+                    <span class="category-tag">${p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>
+                    <h4>${p.name}</h4>
+                    <p class="price">৳ ${parseFloat(p.price).toFixed(2)}</p>
+                    ${ratingHtml}
+                    <div class="color-picker" onclick="event.stopPropagation()">
+                        <p class="color-label">Color: <span class="chosen-color">${firstColor.charAt(0).toUpperCase() + firstColor.slice(1)}</span></p>
+                        <div class="color-options">${colorDots}</div>
+                    </div>
+                    <button class="add-to-cart"
+                        onclick="event.stopPropagation(); addToCartWithColor(this, '${p.name}', ${p.price})">
+                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+ 
+    // Re-attach color dot listeners
+    document.querySelectorAll('.color-options').forEach(group => {
+        group.querySelectorAll('.color-dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                group.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
+                dot.classList.add('selected');
+                group.closest('.color-picker').querySelector('.chosen-color').textContent = dot.dataset.color;
+            });
+        });
+    });
+ 
+    // Re-attach filter listeners
+    document.querySelectorAll('input[name="category"], input[name="price"]').forEach(input => {
+        input.addEventListener('change', applyFilters);
+    });
+ 
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            applyFilters();
+        });
+    });
+ 
+    // URL param auto-filter
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get('category');
+    if (cat) {
+        const radio = document.querySelector(`input[name="category"][value="${cat}"]`);
+        if (radio) { radio.checked = true; applyFilters(); }
+    } else {
+        applyFilters();
+    }
+}
+ 
+// Run on shop page
+renderShopProducts();

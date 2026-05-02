@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Order - munchkin.cro</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+</head>
+<body>
+
+    <section id="header">
+        <a href="index.html"><img src="img/logo1.png" alt="munchkin.cro Logo" class="logo"></a>
+        <div>
+            <ul id="navbar">
+                <li><a href="index.html">Home</a></li>
+                <li class="dropdown">
+                    <a href="shop.html">Shop <i class="fa-solid fa-chevron-down dropdown-arrow"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                        <li><a href="shop.html?category=plushies">Plushies</a></li>
+                        <li><a href="shop.html?category=flowers">Flowers</a></li>
+                        <li><a href="shop.html?category=accessories">Accessories</a></li>
+                        <li><a href="shop.html?category=wearables">Wearables</a></li>
+                        <li><a href="shop.html?category=bags">Bags</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="custom-order.html" class="active">Custom Order</a></li>
+                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="custom-order-page">
+
+        <div class="custom-order-hero">
+            <h1>✨ Custom Order</h1>
+            <p>Want something made just for you? Fill in your preferences and we'll bring your vision to life 🧶</p>
+        </div>
+
+        <div class="custom-order-layout">
+
+            <!-- Form -->
+            <div class="custom-order-form-wrap">
+
+                <form id="custom-order-form">
+
+                    <!-- Personal Details -->
+                    <div class="co-section">
+                        <h3><i class="fa-solid fa-user"></i> Your Details</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" id="co-name" placeholder="Your name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone (WhatsApp) *</label>
+                                <div class="phone-input-wrap">
+                                    <span class="phone-prefix">🇧🇩 +880</span>
+                                    <input type="tel" id="co-phone" placeholder="01XXXXXXXXX" maxlength="11" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email (optional)</label>
+                            <input type="email" id="co-email" placeholder="you@email.com">
+                        </div>
+                    </div>
+
+                    <!-- Product Preferences -->
+                    <div class="co-section">
+                        <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Product Preferences</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Product Type *</label>
+                                <select id="co-type" required>
+                                    <option value="">Select type</option>
+                                    <option value="Keyring">Keyring</option>
+                                    <option value="Plushie">Plushie</option>
+                                    <option value="Flower Bouquet">Flower Bouquet</option>
+                                    <option value="Accessory">Accessory</option>
+                                    <option value="Wearable">Wearable</option>
+                                    <option value="Bag">Bag</option>
+                                    <option value="Other">Other (describe below)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Quantity *</label>
+                                <input type="number" id="co-qty" placeholder="e.g. 1" min="1" value="1" required>
+                            </div>
+                        </div>
+
+                        <!-- Color Preference -->
+                        <div class="form-group">
+                            <label>Preferred Colours</label>
+                            <div class="color-checkbox-grid">
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Pink"> 
+                                    <span class="color-check-dot" style="background:#ff869c;"></span> Pink
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="White"> 
+                                    <span class="color-check-dot" style="background:#f5f5f5; border:1px solid #ddd;"></span> White
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Blue"> 
+                                    <span class="color-check-dot" style="background:#a8d8ea;"></span> Blue
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Yellow"> 
+                                    <span class="color-check-dot" style="background:#ffd166;"></span> Yellow
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Green"> 
+                                    <span class="color-check-dot" style="background:#b5ead7;"></span> Green
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Purple"> 
+                                    <span class="color-check-dot" style="background:#c3b1e1;"></span> Purple
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Brown"> 
+                                    <span class="color-check-dot" style="background:#c8a882;"></span> Brown
+                                </label>
+                                <label class="color-check-item">
+                                    <input type="checkbox" value="Other"> 
+                                    <span class="color-check-dot" style="background: linear-gradient(135deg,#ff869c,#a8d8ea,#ffd166);"></span> Other
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Size -->
+                        <div class="form-group">
+                            <label>Preferred Size</label>
+                            <select id="co-size">
+                                <option value="">No preference</option>
+                                <option value="Small (5–8cm)">Small (5–8cm)</option>
+                                <option value="Medium (8–12cm)">Medium (8–12cm)</option>
+                                <option value="Large (12–18cm)">Large (12–18cm)</option>
+                                <option value="Extra Large (18cm+)">Extra Large (18cm+)</option>
+                            </select>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-group">
+                            <label>Describe What You Want *</label>
+                            <textarea id="co-description" rows="4" placeholder="e.g. A pink bunny plushie with a small bow, about 10cm tall. I want it as a birthday gift for my friend..." required></textarea>
+                        </div>
+
+                        <!-- Occasion -->
+                        <div class="form-group">
+                            <label>Occasion (optional)</label>
+                            <select id="co-occasion">
+                                <option value="">None / Just for me</option>
+                                <option value="Birthday Gift">Birthday Gift 🎂</option>
+                                <option value="Eid Gift">Eid Gift 🌙</option>
+                                <option value="Anniversary">Anniversary 💕</option>
+                                <option value="Wedding">Wedding 💍</option>
+                                <option value="Baby Shower">Baby Shower 🍼</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Reference Image Upload -->
+                    <div class="co-section">
+                        <h3><i class="fa-solid fa-image"></i> Reference Image (optional)</h3>
+                        <p class="co-hint">Upload a photo of what you have in mind — a drawing, screenshot, or inspiration image</p>
+
+                        <div class="file-upload-area" id="file-upload-area" onclick="document.getElementById('co-file').click()">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <p>Click to upload or drag & drop</p>
+                            <span>PNG, JPG, JPEG up to 5MB</span>
+                        </div>
+                        <input type="file" id="co-file" accept="image/*" style="display:none" onchange="previewImage(this)">
+
+                        <div id="image-preview-wrap" style="display:none; margin-top:12px;">
+                            <img id="image-preview" src="" alt="Preview" style="max-width:100%; max-height:200px; border-radius:12px; object-fit:contain; border:1px solid #ffeaee;">
+                            <button type="button" class="remove-preview-btn" onclick="removePreview()">
+                                <i class="fa-solid fa-xmark"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Budget -->
+                    <div class="co-section">
+                        <h3><i class="fa-solid fa-bangladeshi-taka-sign"></i> Budget</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Minimum (৳)</label>
+                                <input type="number" id="co-budget-min" placeholder="e.g. 300" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Maximum (৳)</label>
+                                <input type="number" id="co-budget-max" placeholder="e.g. 800" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div class="co-section">
+                        <h3><i class="fa-solid fa-calendar"></i> Needed By</h3>
+                        <div class="form-group">
+                            <label>Date (optional)</label>
+                            <input type="date" id="co-deadline" min="">
+                        </div>
+                    </div>
+
+                    <p id="co-error" class="auth-error"></p>
+                    <p id="co-success" class="auth-success"></p>
+
+                    <button type="button" class="whatsapp-confirm-btn" onclick="submitCustomOrder()">
+                        <i class="fa-brands fa-whatsapp"></i> Send Custom Order via WhatsApp
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Info Sidebar -->
+            <div class="custom-order-info">
+                <div class="co-info-card">
+                    <h3>How it works 🎀</h3>
+                    <div class="co-step">
+                        <span class="co-step-num">1</span>
+                        <div>
+                            <strong>Fill the form</strong>
+                            <p>Tell us what you want — colour, size, design, and any reference image</p>
+                        </div>
+                    </div>
+                    <div class="co-step">
+                        <span class="co-step-num">2</span>
+                        <div>
+                            <strong>We confirm</strong>
+                            <p>We'll reply on WhatsApp within 24 hours with a quote and timeline</p>
+                        </div>
+                    </div>
+                    <div class="co-step">
+                        <span class="co-step-num">3</span>
+                        <div>
+                            <strong>We craft it</strong>
+                            <p>Your piece is handmade with love, one stitch at a time</p>
+                        </div>
+                    </div>
+                    <div class="co-step">
+                        <span class="co-step-num">4</span>
+                        <div>
+                            <strong>Delivered to you</strong>
+                            <p>Packed with care and delivered within the agreed timeline 🚚</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="co-info-card">
+                    <h3>Good to know ✨</h3>
+                    <ul class="co-info-list">
+                        <li><i class="fa-solid fa-check"></i> Minimum order: ৳ 250</li>
+                        <li><i class="fa-solid fa-check"></i> Payment via bKash / Nagad</li>
+                        <li><i class="fa-solid fa-check"></i> 50% advance required</li>
+                        <li><i class="fa-solid fa-check"></i> Delivery: 7–21 days depending on complexity</li>
+                        <li><i class="fa-solid fa-check"></i> Progress photos shared on WhatsApp</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer id="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
+                <p class="footer-tagline">Crochet made with love, just for you.</p>
+                <div class="footer-info">
+                    <p>🚚 Delivery within: 14 days</p>
+                    <p>✉️ munchkincro@gmail.com</p>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Collections</h4>
+                <ul>
+                    <li><a href="shop.html?category=plushies">Plushies</a></li>
+                    <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                    <li><a href="shop.html?category=accessories">Accessories</a></li>
+                    <li><a href="shop.html?category=wearables">Wearables</a></li>
+                    <li><a href="shop.html?category=bags">Bags</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Links</h4>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="shop.html">Shop</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="cart.html">Cart</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Stay Connected</h4>
+                <ul class="footer-socials">
+                    <li><a href="https://www.instagram.com/munchkin.cro/" target="_blank"><i class="fa-brands fa-instagram"></i> Instagram</a></li>
+                    <li><a href="https://www.facebook.com/munchkincro" target="_blank"><i class="fa-brands fa-facebook"></i> Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2025 munchkin.cro · All rights reserved</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        const SHOP_WHATSAPP = '8801576652249';
+
+        // Set min date to today
+        document.getElementById('co-deadline').min = new Date().toISOString().split('T')[0];
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview-wrap').style.display = 'block';
+                    document.getElementById('file-upload-area').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removePreview() {
+            document.getElementById('co-file').value = '';
+            document.getElementById('image-preview-wrap').style.display = 'none';
+            document.getElementById('file-upload-area').style.display = 'flex';
+        }
+
+        // Drag and drop
+        const dropArea = document.getElementById('file-upload-area');
+        dropArea.addEventListener('dragover', e => { e.preventDefault(); dropArea.classList.add('drag-over'); });
+        dropArea.addEventListener('dragleave', () => dropArea.classList.remove('drag-over'));
+        dropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const input = document.getElementById('co-file');
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                input.files = dt.files;
+                previewImage(input);
+            }
+        });
+
+        function submitCustomOrder() {
+            const name    = document.getElementById('co-name').value.trim();
+            const phone   = document.getElementById('co-phone').value.trim();
+            const type    = document.getElementById('co-type').value;
+            const qty     = document.getElementById('co-qty').value;
+            const desc    = document.getElementById('co-description').value.trim();
+            const errorEl = document.getElementById('co-error');
+
+            errorEl.textContent = '';
+
+            if (!name)  { errorEl.textContent = 'Please enter your name.'; return; }
+            if (!phone || !/^01[3-9]\d{8}$/.test(phone)) {
+                errorEl.textContent = 'Please enter a valid Bangladesh phone number.'; return;
+            }
+            if (!type)  { errorEl.textContent = 'Please select a product type.'; return; }
+            if (!desc)  { errorEl.textContent = 'Please describe what you want.'; return; }
+
+            // Get selected colours
+            const colours = [...document.querySelectorAll('.color-check-item input:checked')]
+                .map(c => c.value).join(', ') || 'Not specified';
+
+            const size     = document.getElementById('co-size').value || 'No preference';
+            const occasion = document.getElementById('co-occasion').value || 'None';
+            const budgetMin = document.getElementById('co-budget-min').value;
+            const budgetMax = document.getElementById('co-budget-max').value;
+            const deadline  = document.getElementById('co-deadline').value;
+            const budget = budgetMin || budgetMax
+                ? `৳ ${budgetMin || '?'} – ৳ ${budgetMax || '?'}`
+                : 'Not specified';
+
+            const message = `
+🎀 *Custom Order Request - munchkin.cro* 🎀
+
+👤 *Customer*
+Name: ${name}
+Phone: +880${phone}
+
+🧶 *Order Details*
+Type: ${type}
+Quantity: ${qty}
+Colours: ${colours}
+Size: ${size}
+Occasion: ${occasion}
+
+📝 *Description*
+${desc}
+
+💰 Budget: ${budget}
+📅 Needed by: ${deadline || 'Flexible'}
+
+_Sent via munchkin.cro custom order form_
+            `.trim();
+
+            // Save to localStorage for admin panel
+            const customOrders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
+            customOrders.push({
+                id: Date.now(),
+                name, phone: `+880${phone}`,
+                type, qty, colours, size, occasion,
+                description: desc, budget, deadline: deadline || 'Flexible',
+                status: 'New Request',
+                date: new Date().toLocaleDateString('en-BD')
+            });
+            localStorage.setItem('munchkin-custom-orders', JSON.stringify(customOrders));
+
+            window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+
+            document.getElementById('co-success').textContent = '✅ Your custom order has been sent! We\'ll reply on WhatsApp within 24 hours 🎀';
+            document.getElementById('custom-order-form').reset();
+            removePreview();
+        }
+    </script>
+</body>
+</html>
