@@ -1,4 +1,4 @@
-# munchkin.cro 🧶
+# munchkin.cro 
 
 A custom crochet e-commerce platform built with HTML, CSS, JavaScript, Node.js, Express, and MongoDB.
 
@@ -7,7 +7,7 @@ A custom crochet e-commerce platform built with HTML, CSS, JavaScript, Node.js, 
 ## Group 9
 - Sumehra Afsheen Nuhaa
 - Shazzad Hossan Labib
-- Nafiz Al Anjim Ahmed
+- Tamim Shariar
 
 ---
 
