@@ -98,59 +98,135 @@
 }
 
 /*  Products  */
+/* =====================
+   FEATURED PRODUCTS FIX
+   Replace your existing #product1 and .pro-container
+   styles in style.css with these
+   ===================== */
+
 .section-p1 {
     padding: 50px 80px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
-.section-p1 h2{
+.featured-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.featured-header h2 {
     font-size: 28px;
     color: #5D4037;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-#product1 {
-    display: flex;
-    align-items: center;
-    text-align: center;
+    font-weight: 700;
 }
 
-.pro-container {
+.view-all-link {
+    font-size: 14px;
+    color: #ff869c;
+    text-decoration: none;
+    font-weight: 600;
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-top: 20px;
-    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s;
+}
+
+.view-all-link:hover { gap: 10px; }
+
+/* ── 4-column grid, always equal ── */
+.pro-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+/* ── Each card ── */
+.pro-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
 
 #product1 .pro {
-    width: 23%;
-    min-width: 250px;
-    padding: 10px 12px;
+    width: 100%;
     border: 1px solid #ffeaee;
-    border-radius: 25px;
+    border-radius: 20px;
+    overflow: hidden;
     cursor: pointer;
-    margin: 15px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: #fff;
+    box-sizing: border-box;
 }
 
+#product1 .pro:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(255, 134, 156, 0.18);
+}
+
+/* ── Image: same height on all cards ── */
 #product1 .pro img {
     width: 100%;
-    border-radius: 20px;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    border-radius: 0;
 }
 
+/* ── Card text area ── */
 #product1 .pro .des {
-    font-size: 18px;
-    color: #5D4037;
-    margin-top: 10px;
+    padding: 14px 16px 18px;
+    text-align: left;
+}
+
+#product1 .pro .des .category-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 8px;
+    font-weight: 600;
 }
 
 #product1 .pro .des h4 {
-    font-size: 20px;
+    font-size: 17px;
     color: #5D4037;
-    padding-top: 7px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.browse-link {
+    font-size: 13px;
+    color: #ff869c;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: gap 0.2s;
+}
+
+#product1 .pro:hover .browse-link { gap: 8px; }
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+    .pro-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .pro-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    .section-p1 {
+        padding: 30px 20px;
+    }
+
+    #product1 .pro img {
+        height: 160px;
+    }
 }
 
 /*  Responsive  */

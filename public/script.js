@@ -35,22 +35,22 @@ const DEFAULT_PRODUCTS = [
         name: 'Chick holding Flower',
         category: 'keyrings',
         price: 350,
-        colors: 'pink,white,yellow',
+        colors: 'yellow,white,pink',
         image: 'img/flower_chick.png',
         images: ['img/flower_chick.png'],
         description: 'An adorable handmade crochet chick holding a tiny flower — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. 🐣',
-        materials: ['100% cotton yarn', 'Hypoallergenic polyfill stuffing', 'Metal keyring clip', 'Safety eyes (6mm)'],
+        materials: ['4 ply milk cotton yarn', 'Polyfill stuffing'],
         dimensions: 'Approximately 8–10 cm tall. Slight size variations may occur as each piece is handmade.'
     },
     {
         name: 'Tulips',
         category: 'flowers',
         price: 280,
-        colors: 'pink,blue,purple,yellow',
+        colors: 'pink,blue,purple,yellow,white',
         image: 'img/Tulips.png',
         images: ['img/Tulips.png'],
         description: 'Beautiful handmade crochet tulips that never wilt! A perfect gift for any occasion — birthdays, Eid, or just because. Available in a variety of colours. 🌷',
-        materials: ['100% acrylic yarn', 'Floral wire stem', 'Green yarn wrapping', 'Optional ribbon bow'],
+        materials: ['4 ply milk cotton yarn'],
         dimensions: 'Stem height approximately 25–30 cm. Flower head approximately 5–6 cm wide.'
     },
     {
@@ -61,7 +61,7 @@ const DEFAULT_PRODUCTS = [
         image: 'img/bear_wallet.jpeg',
         images: ['img/bear_wallet.jpeg'],
         description: 'A super cute crochet bear-face wallet — spacious enough for cards and cash, and adorable enough to carry everywhere! Handstitched details make every piece unique. 🐻',
-        materials: ['100% cotton yarn', 'Zipper closure', 'Inner lining fabric', 'Safety eyes (8mm)', 'Embroidered nose and mouth'],
+        materials: ['milk cotton yarn', 'Zipper closure', 'Inner lining fabric', 'Safety eyes (8mm)', 'Embroidered nose and mouth'],
         dimensions: 'Approximately 12 × 9 cm when closed. Fits cards, folded notes, and small items.'
     }
     // Add more products here following the same format
@@ -426,21 +426,21 @@ const SAMPLE_REVIEWS = [
         name: 'Nadia Islam',
         rating: 5,
         text: 'Absolutely love it! The quality is amazing and it arrived so well packaged. Will definitely order again 🎀',
-        date: '15 Apr 2025',
+        //date: '15 Apr 2025',
         photo: null
     },
     {
         name: 'Sumaiya R.',
         rating: 5,
         text: 'Ordered a custom plushie for my sister\'s birthday — she was obsessed! The colour matching was perfect.',
-        date: '2 Mar 2025',
+        //date: '2 Mar 2025',
         photo: null
     },
     {
         name: 'Tasnim H.',
         rating: 4,
         text: 'Super cute and well made! Took about 12 days which is reasonable. The crochet work is really neat.',
-        date: '20 Feb 2025',
+        //date: '20 Feb 2025',
         photo: null
     }
 ];
