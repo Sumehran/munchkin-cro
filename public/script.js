@@ -86,7 +86,7 @@ const DEFAULT_PRODUCTS = [
         materials: ['4 ply milk cotton yarn'],
         dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
     },
-        {
+    {
         name: 'Chick Charm',
         category: 'keyrings',
         price: 120,
@@ -96,6 +96,39 @@ const DEFAULT_PRODUCTS = [
         description: 'A handmade crochet chick charm — perfect as a keyring or phone charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
         materials: ['4 ply milk cotton yarn'],
         dimensions: 'Approximately 2-3 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Flower Ducky',
+        category: 'keyrings',
+        price: 450,
+        colors: 'white',
+        image: 'img/whitechick.jpeg',
+        images: ['img/whitechick.jpeg'],
+        description: 'A handmade crochet duckling charm — perfect as a keyring or phone charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Octo Buddy',
+        category: 'keyrings',
+        price: 280,
+        colors: 'red,pink,yellow',
+        image: 'img/octo.jpeg',
+        images: ['img/octo.jpeg'],
+        description: 'A handmade crochet octopus buddy — perfect as a keyring or phone charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 3-4 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Baby Otter',
+        category: 'keyrings',
+        price: 350,
+        colors: 'brown',
+        image: 'img/otter.jpeg',
+        images: ['img/otter.jpeg'],
+        description: 'A handmade crochet otter charm — perfect as a keyring or phone charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 3-4 cm tall. Slight size variations may occur as each piece is handmade.'
     },
     {
         name: 'Dino keyring',
@@ -162,6 +195,17 @@ const DEFAULT_PRODUCTS = [
         description: 'An adorable handmade crochet bunny plushie — cute enough to be a gift or just a treat for yourself!',
         materials: ['fluffy yarn', 'Polyfill stuffing'],
         dimensions: 'Approximately 8-9 cm tall.'
+    },
+    {
+        name: 'Kirby Plush',
+        category: 'plushies',
+        price: 1800,
+        colors: 'pink',
+        image: 'img/kirby.jpeg',
+        images: ['img/kirby.jpeg'],
+        description: 'An adorable handmade crochet Kirby plushie — cute enough to be a gift or just a treat for yourself!',
+        materials: ['fluffy yarn', 'Polyfill stuffing'],
+        dimensions: 'Approximately 6-7 inches tall.'
     },
     {
         name: 'Shell Stitch Bag',
@@ -234,8 +278,8 @@ const DEFAULT_PRODUCTS = [
         category: 'accessories',
         price: 150,
         colors: 'yellow',
-        image: 'img/sunfower_coaster.jpeg',
-        images: ['img/sunfower_coaster.jpeg'],
+        image: 'img/sunflower_coaster.jpeg',
+        images: ['img/sunflower_coaster.jpeg'],
         description: 'A handmade crochet sunflower coaster with a miniature basket! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
         materials: ['4 ply milk cotton yarn'],
         
