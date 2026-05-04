@@ -42,6 +42,94 @@ const DEFAULT_PRODUCTS = [
         materials: ['4 ply milk cotton yarn', 'Polyfill stuffing'],
         dimensions: 'Approximately 8–10 cm tall. Slight size variations may occur as each piece is handmade.'
     },
+        {
+        name: 'Bee Crochet',
+        category: 'keyrings',
+        price: 280,
+        colors: 'yellow,pink',
+        image: 'img/bee.jpeg',
+        images: ['img/bee.jpeg'],
+        description: 'An adorable handmade crochet bee — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour.',
+        materials: ['4 ply milk cotton yarn', 'Polyfill stuffing'],
+        dimensions: 'Approximately 3-4 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Bow keyring',
+        category: 'keyrings',
+        price: 150,
+        colors: 'red,white,pink',
+        image: 'img/bow.jpeg',
+        images: ['img/bow.jpeg'],
+        description: 'A handmade crochet bow keyring — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 2-3 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+        {
+        name: 'Sunflower Charm',
+        category: 'keyrings',
+        price: 150,
+        colors: 'red,white,pink',
+        image: 'img/sunflower.jpeg',
+        images: ['img/sunflower.jpeg'],
+        description: 'A handmade crochet sunflower charm — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 3-4 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Cat keyring',
+        category: 'keyrings',
+        price: 450,
+        colors: 'pink,black,gray,white',
+        image: 'img/cat.jpeg',
+        images: ['img/cat.jpeg'],
+        description: 'A handmade crochet cat keyring — perfect as a keyring or bag charm! Customise your own kitty in your favourite colour.',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+        {
+        name: 'Chick Charm',
+        category: 'keyrings',
+        price: 120,
+        colors: 'yellow',
+        image: 'img/chicks.jpeg',
+        images: ['img/chicks.jpeg'],
+        description: 'A handmade crochet chick charm — perfect as a keyring or phone charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 2-3 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Dino keyring',
+        category: 'keyrings',
+        price: 480,
+        colors: 'yellow, orange, blue',
+        image: 'img/dinos.jpeg',
+        images: ['img/dinos.jpeg'],
+        description: 'A handmade crochet dino keyring — perfect as a keyring or bag charm! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Spiderman - Miles Morales Crochet',
+        category: 'keyrings',
+        price: 380,
+        colors: 'black',
+        image: 'img/miles.jpeg',
+        images: ['img/miles.jpeg'],
+        description: 'Your favourite character Spiderman Miles Morales is ready to save the world! ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
+    {
+        name: 'Spider Gwen Crochet',
+        category: 'keyrings',
+        price: 380,
+        colors: 'white',
+        image: 'img/gwen.jpeg',
+        images: ['img/gwen.jpeg'],
+        description: 'Your favourite character Spider Gwen is ready to save the world! ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 4-5 cm tall. Slight size variations may occur as each piece is handmade.'
+    },
     {
         name: 'Michelin Chick Plush',
         category: 'plushies',
@@ -52,6 +140,28 @@ const DEFAULT_PRODUCTS = [
         description: 'An adorable handmade crochet Michelin chef chick plushie — cute enough to be a gift or just a treat for yourself! 🐣👨‍🍳',
         materials: ['4 ply milk cotton yarn', 'Polyfill stuffing', 'Safety eyes'],
         dimensions: 'Approximately 10–12 cm tall.'
+    },
+    {
+        name: 'Cat Plush',
+        category: 'plushies',
+        price: 2400,
+        colors: 'white',
+        image: 'img/cat_plush.jpeg',
+        images: ['img/cat_plush.jpeg'],
+        description: 'An adorable handmade crochet cat plushie — cute enough to be a gift or just a treat for yourself!',
+        materials: ['fluffy yarn', 'Polyfill stuffing'],
+        dimensions: 'Approximately 8-9 inches tall.'
+    },
+    {
+        name: 'Bunny Plush',
+        category: 'plushies',
+        price: 680,
+        colors: 'brown,white',
+        image: 'img/bunnies.jpeg',
+        images: ['img/bunnies.jpeg'],
+        description: 'An adorable handmade crochet bunny plushie — cute enough to be a gift or just a treat for yourself!',
+        materials: ['fluffy yarn', 'Polyfill stuffing'],
+        dimensions: 'Approximately 8-9 cm tall.'
     },
     {
         name: 'Shell Stitch Bag',
@@ -76,16 +186,60 @@ const DEFAULT_PRODUCTS = [
         dimensions: 'Stem height approximately 25–30 cm. Flower head approximately 5–6 cm wide.'
     },
     {
+        name: 'Lily Flower',
+        category: 'flowers',
+        price: 900,
+        colors: 'pink,blue,purple,yellow,white',
+        image: 'img/lily.jpeg',
+        images: ['img/lily.jpeg'],
+        description: 'Beautiful handmade crochet lilies that never wilt! A perfect gift for any occasion — birthdays, Eid, or just because.',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Stem height approximately 25–30 cm. Flower head approximately 5–6 cm wide.'
+    },
+    {
         name: 'Bear Wallet',
         category: 'accessories',
-        price: 650,
+        price: 550,
         colors: 'brown,white,pink',
         image: 'img/bear_wallet.jpeg',
         images: ['img/bear_wallet.jpeg'],
-        description: 'A super cute crochet bear-face wallet — spacious enough for cards and cash, and adorable enough to carry everywhere! Handstitched details make every piece unique. 🐻',
+        description: 'A super cute crochet bear-face wallet — spacious enough for cards and cash, and adorable enough to carry everywhere! Handstitched details make every piece unique. ',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 12 × 9 cm when closed. Fits cards, folded notes, and small items.'
+    },
+        {
+        name: 'Crochet Pouch',
+        category: 'accessories',
+        price: 750,
+        colors: 'brown',
+        image: 'img/pouch.jpeg',
+        images: ['img/pouch.jpeg'],
+        description: 'A super cute crochet pouch — spacious enough for cards and cash, and adorable enough to carry everywhere! ',
         materials: ['milk cotton yarn', 'Zipper closure', 'Inner lining fabric', 'Safety eyes (8mm)', 'Embroidered nose and mouth'],
         dimensions: 'Approximately 12 × 9 cm when closed. Fits cards, folded notes, and small items.'
-    }
+    },
+        {
+        name: 'Strawberry pouch',
+        category: 'accessories',
+        price: 550,
+        colors: 'pink',
+        image: 'img/strawberry_pouch.jpeg',
+        images: ['img/strawberry_pouch.jpeg'],
+        description: 'A super cute crochet strawberry pouch — spacious enough for cards and cash, and adorable enough to carry everywhere!',
+        materials: ['4 ply milk cotton yarn'],
+        dimensions: 'Approximately 12 × 9 cm when closed. Fits cards, folded notes, and small items.'
+    },
+    {
+        name: 'Sunflower Coaster  ',
+        category: 'accessories',
+        price: 150,
+        colors: 'yellow',
+        image: 'img/sunfower_coaster.jpeg',
+        images: ['img/sunfower_coaster.jpeg'],
+        description: 'A handmade crochet sunflower coaster with a miniature basket! Each piece is lovingly stitched by hand and made to order in your chosen colour. ',
+        materials: ['4 ply milk cotton yarn'],
+        
+    },
     // Add more products here following the same format
 ];
  
