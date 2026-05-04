@@ -15,11 +15,21 @@
         <div>
             <ul id="navbar">
                 <li><a href="index.html">Home</a></li>
-                <li><a href="shop.html">Shop</a></li>
+                <li class="dropdown">
+                    <a href="shop.html">Shop <i class="fa-solid fa-chevron-down dropdown-arrow"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="shop.html?category=keyrings">Keyrings</a></li>
+                        <li><a href="shop.html?category=plushies">Plushies</a></li>
+                        <li><a href="shop.html?category=flowers">Flowers</a></li>
+                        <li><a href="shop.html?category=accessories">Accessories</a></li>
+                        <li><a href="shop.html?category=wearables">Wearables</a></li>
+                        <li><a href="shop.html?category=bags">Bags</a></li>
+                    </ul>
+                </li>
                 <li><a href="about.html" class="active">About Us</a></li>
                 <li><a href="custom-order.html">Custom Order</a></li>
                 <li><a href="track-order.html">Track Order</a></li>
-                <li><a href="cart.html"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
+                <li><a href="cart.html"><span class="cart-icon-wrap"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i><span class="cart-count-badge" style="display:none;">0</span></span></a></li>
             </ul>
         </div>
     </section>
@@ -29,7 +39,7 @@
         <div class="about-container">
             <h1>About Us</h1>
             <p>Welcome! we are the team behind munchkin.cro <3 . We make and sell cutesy handmade crochet accessories — from plushies and keychains to bags and wearables — all crafted with warmth and care, just for you ★🍓!!
-               Every piece is made to order, so you can pick your colours, your style, your vibe. Whether it's a gift or a little treat for yourself, we hope our creation brings a big smile to your face 🌸</p>
+               'munchkin.cro' is solely based on Bangladesh. Every piece is made to order, so you can pick your colours, your style, your vibe. Whether it's a gift or a little treat for yourself, we hope our creation brings a big smile to your face 🌸</p>
         </div>
     </section>
 
@@ -40,8 +50,8 @@
                 <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
                 <p class="footer-tagline">Crochet made with love, just for you.</p>
                 <div class="footer-info">
-                    <p>🚚 Delivery within: 14 days</p>
-                    <p>✉️ munchkincro@gmail.com</p>
+                    <p>Delivery within: 14 days</p>
+                    <p>munchkincro@gmail.com</p>
                 </div>
             </div>
             <div class="footer-col">
@@ -105,7 +115,7 @@
     <div class="chat-body">
         <!-- Welcome bubble -->
         <div class="chat-message incoming">
-            <p>Hii! HiiWelcome to <strong>munchkin.cro</strong>!</p>
+            <p>Hii! Welcome to <strong>munchkin.cro</strong>!</p>
             <p>How can I help you today? Pick an option below or type your own message on WhatsApp 💬</p>
         </div>
  

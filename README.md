@@ -92,13 +92,11 @@ munchkin-cro/
     │   ├── auth.js
     │   ├── products.js
     │   ├── orders.js
-    │   ├── reviews.js
     │   └── customOrders.js
     ├── models/
     │   ├── User.js
     │   ├── Product.js
     │   ├── Order.js
-    │   ├── Review.js
     │   └── CustomOrder.js
     └── middleware/
         └── auth.js
@@ -125,6 +123,5 @@ munchkin-cro/
 - Add to cart and checkout via WhatsApp
 - Custom order form with reference image upload
 - Order tracking system
-- Customer reviews and ratings
 - Admin panel (product management, order management, user management)
 - User registration and login

@@ -138,8 +138,8 @@
                 <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
                 <p class="footer-tagline">Crochet made with love, just for you.</p>
                 <div class="footer-info">
-                    <p>🚚 Delivery within: 14 days</p>
-                    <p>✉️ munchkincro@gmail.com</p>
+                    <p>Delivery within: 14 days</p>
+                    <p>munchkincro@gmail.com</p>
                 </div>
             </div>
             <div class="footer-col">
@@ -209,7 +209,7 @@
             document.getElementById('tr-phone').textContent    = order.phone || '—';
             document.getElementById('tr-address').textContent  = order.address || '—';
             document.getElementById('tr-items').textContent    = order.items;
-            document.getElementById('tr-total').textContent    = `৳ ${order.total}`;
+            document.getElementById('tr-total').textContent    = `Tk ${order.total}`;
 
             // Status badge
             const badge = document.getElementById('tr-status-badge');
@@ -234,9 +234,9 @@
             // Status messages
             const messages = {
                 'Pending':    '⏳ Your order has been received! We\'ll start crafting it soon.',
-                'Processing': '🧶 Your order is being handcrafted with love! We\'ll notify you when it ships.',
-                'Shipped':    '🚚 Your order is on its way! Expected delivery within a few days.',
-                'Completed':  '🎀 Your order has been delivered! We hope you love it. Please leave us a review!',
+                'Processing': 'Your order is being handcrafted with love! We\'ll notify you when it ships.',
+                'Shipped':    'Your order is on its way! Expected delivery within a few days.',
+                'Completed':  'Your order has been delivered! We hope you love it. Please leave us a review!',
                 'Cancelled':  '❌ This order has been cancelled. Contact us on WhatsApp for help.'
             };
             document.getElementById('status-message-text').textContent =

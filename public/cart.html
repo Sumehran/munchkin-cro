@@ -26,6 +26,7 @@
                     </ul>
                 </li>
                 <li><a href="about.html">About Us</a></li>
+                <li><a href="custom-order.html">Custom Order</a></li>
                 <li><a href="track-order.html">Track Order</a></li>
                 <li><a href="cart.html" class="active"><i class="fa-solid fa-cart-shopping" style="color: rgb(221, 160, 160);"></i></a></li>
             </ul>
@@ -78,8 +79,8 @@
                 <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
                 <p class="footer-tagline">Crochet made with love, just for you.</p>
                 <div class="footer-info">
-                    <p>🚚 Delivery within: 14 days</p>
-                    <p>✉️ munchkincro@gmail.com</p>
+                    <p>Delivery within: 14 days</p>
+                    <p>munchkincro@gmail.com</p>
                 </div>
             </div>
             <div class="footer-col">
@@ -98,6 +99,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="shop.html">Shop</a></li>
                     <li><a href="about.html">About Us</a></li>
+                    <li><a href="custom-order.html">Custom Order</a></li>
                     <li><a href="track-order.html">Track Order</a></li>
                     <li><a href="cart.html">Cart</a></li>
                 </ul>
@@ -142,7 +144,7 @@
     <div class="chat-body">
         <!-- Welcome bubble -->
         <div class="chat-message incoming">
-            <p>Hii! HiiWelcome to <strong>munchkin.cro</strong>!</p>
+            <p>Hii! Welcome to <strong>munchkin.cro</strong>!</p>
             <p>How can I help you today? Pick an option below or type your own message on WhatsApp 💬</p>
         </div>
  
@@ -174,6 +176,69 @@
         </a>
     </div>
  
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkout-overlay" class="checkout-overlay hidden" onclick="closeCheckout(event)">
+    <div class="checkout-modal">
+        <div class="checkout-header">
+            <h3> Confirm Your Order</h3>
+            <button class="checkout-close-btn" onclick="closeCheckoutModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="checkout-summary-box">
+            <h4>Order Summary</h4>
+            <div id="modal-order-items"></div>
+            <div class="modal-summary-totals">
+                <div class="modal-row"><span>Subtotal</span><span id="modal-subtotal">Tk 0.00</span></div>
+                <div class="modal-row"><span>Delivery</span><span id="modal-delivery">Tk 60.00</span></div>
+                <div class="modal-row total"><span>Total</span><span id="modal-total">Tk 0.00</span></div>
+            </div>
+        </div>
+        <div class="checkout-form">
+            <h4>Your Details</h4>
+            <div class="form-group">
+                <label><i class="fa-solid fa-user"></i> Full Name *</label>
+                <input type="text" id="co-name" placeholder="Your full name">
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-phone"></i> Phone Number (WhatsApp) *</label>
+                <div class="phone-input-wrap">
+                    <span class="phone-prefix">🇧🇩 +880</span>
+                    <input type="tel" id="co-phone" placeholder="01XXXXXXXXX" maxlength="11">
+                </div>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-location-dot"></i> Delivery Address *</label>
+                <textarea id="co-address" placeholder="House, Road, Area, City" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-money-bill-wave"></i> Payment Method</label>
+                <select id="co-payment">
+                    <option value="bKash">bKash</option>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                </select>
+            </div>
+            <div class="form-group">
+    <label><i class="fa-solid fa-truck"></i> Shipping Method</label>
+    <select id="co-shipping" onchange="updateSummary(getCurrentSubtotal())">
+        <option value="standard">Standard Delivery (Tk 60) — 7–14 days</option>
+        <option value="express">Express Delivery (Tk 120) — 3–5 days</option>
+        <option value="pickup">Self Pickup — Free (Dhaka only)</option>
+    </select>
+</div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-pen"></i> Special Notes (optional)</label>
+                <textarea id="co-notes" placeholder="e.g. colour preferences, gift wrapping..." rows="2"></textarea>
+            </div>
+            <p id="checkout-error" class="auth-error"></p>
+            <button class="whatsapp-confirm-btn" onclick="confirmOrderWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Confirm via WhatsApp
+            </button>
+            <p class="checkout-note">This will open WhatsApp with your order details</p>
+        </div>
+    </div>
 </div>
 
     <script src="script.js"></script>
@@ -224,13 +289,13 @@
         }
 
 function updateSummary(subtotal) {
-    const delivery = subtotal > 0 ? getShippingCost() : 0;
-    const subtotalEl  = document.getElementById('subtotal');
-    const deliveryEl  = document.getElementById('delivery');
-    const totalEl     = document.getElementById('total');
-    if (subtotalEl) subtotalEl.textContent = `৳ ${subtotal.toFixed(2)}`;
-    if (deliveryEl) deliveryEl.textContent = `৳ ${delivery.toFixed(2)}`;
-    if (totalEl)    totalEl.textContent    = `৳ ${(subtotal + delivery).toFixed(2)}`;
+    const delivery = subtotal > 0 ? 60 : 0;
+    const subtotalEl = document.getElementById('subtotal');
+    const deliveryEl = document.getElementById('delivery');
+    const totalEl    = document.getElementById('total');
+    if (subtotalEl) subtotalEl.textContent = `Tk ${subtotal.toFixed(2)}`;
+    if (deliveryEl) deliveryEl.textContent = `Tk ${delivery.toFixed(2)}`;
+    if (totalEl)    totalEl.textContent    = `Tk ${(subtotal + delivery).toFixed(2)}`;
 }
 
         function changeQty(index, delta) {
@@ -251,10 +316,158 @@ function updateSummary(subtotal) {
         function checkout() {
             const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
             if (cart.length === 0) {
-                alert('Your cart is empty!');
+                showToast('Your cart is empty! 🛒');
                 return;
             }
-            alert('Thank you for your order! HiiWe will contact you via Instagram/Facebook to confirm.');
+
+            // Populate modal order summary
+            const itemsContainer = document.getElementById('modal-order-items');
+            let subtotal = 0;
+
+            if (itemsContainer) {
+                itemsContainer.innerHTML = cart.map(item => {
+                    const lineTotal = item.price * item.qty;
+                    subtotal += lineTotal;
+                    return `
+                        <div class="modal-item-row">
+                            <span>${item.name} × ${item.qty}</span>
+                            <span>Tk ${lineTotal.toFixed(2)}</span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                cart.forEach(item => subtotal += item.price * item.qty);
+            }
+
+            const delivery = 60;
+            const total = subtotal + delivery;
+
+            const modalSubtotal = document.getElementById('modal-subtotal');
+            const modalDelivery = document.getElementById('modal-delivery');
+            const modalTotal    = document.getElementById('modal-total');
+            if (modalSubtotal) modalSubtotal.textContent = `Tk ${subtotal.toFixed(2)}`;
+            if (modalDelivery) modalDelivery.textContent = `Tk ${delivery.toFixed(2)}`;
+            if (modalTotal)    modalTotal.textContent    = `Tk ${total.toFixed(2)}`;
+
+            // Pre-fill name if logged in
+            const session = JSON.parse(localStorage.getItem('munchkin-session'));
+            if (session) {
+                const nameEl = document.getElementById('co-name');
+                if (nameEl) nameEl.value = session.name || '';
+            }
+
+            // Show modal
+            const overlay = document.getElementById('checkout-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // ── Close modal ──
+        function closeCheckoutModal() {
+            document.getElementById('checkout-overlay').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function closeCheckout(event) {
+            if (event.target.id === 'checkout-overlay') closeCheckoutModal();
+        }
+
+        // ── Get current subtotal from cart ──
+        function getCurrentSubtotal() {
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+        }
+
+        // ── Confirm order + send to WhatsApp ──
+        const SHOP_WHATSAPP = '8801576652249';
+
+        function confirmOrderWhatsApp() {
+            const name    = document.getElementById('co-name').value.trim();
+            const phone   = document.getElementById('co-phone').value.trim();
+            const address = document.getElementById('co-address').value.trim();
+            const payment = document.getElementById('co-payment').value;
+            const shipping = document.getElementById('co-shipping')?.value || 'standard';
+            const notes   = document.getElementById('co-notes').value.trim();
+            const errorEl = document.getElementById('checkout-error');
+
+            errorEl.textContent = '';
+
+            // Validation
+            if (!name) { errorEl.textContent = 'Please enter your full name.'; return; }
+            if (!phone || !/^01[3-9]\d{8}$/.test(phone)) {
+                errorEl.textContent = 'Please enter a valid Bangladesh phone number (e.g. 01712345678).'; return;
+            }
+            if (!address) { errorEl.textContent = 'Please enter your delivery address.'; return; }
+
+            // Build cart summary
+            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            let subtotal = 0;
+            const itemLines = cart.map(item => {
+                subtotal += item.price * item.qty;
+                return `• ${item.name} × ${item.qty} = Tk ${(item.price * item.qty).toFixed(2)}`;
+            }).join('\n');
+
+            const deliveryCost = shipping === 'express' ? 120 : shipping === 'pickup' ? 0 : 60;
+            const shippingLabel = shipping === 'express' ? 'Express Delivery (Tk 120)' :
+                                  shipping === 'pickup'  ? 'Self Pickup (Free)' :
+                                  'Standard Delivery (Tk 60)';
+            const total = subtotal + deliveryCost;
+
+            // WhatsApp message
+            const message = `
+*New Order - munchkin.cro* 
+
+*Customer Details*
+Name: ${name}
+Phone: +880${phone}
+Address: ${address}
+Payment: ${payment}
+Shipping: ${shippingLabel}
+
+*Order Items*
+${itemLines}
+
+*Price Breakdown*
+Subtotal: Tk ${subtotal.toFixed(2)}
+Delivery: Tk ${deliveryCost.toFixed(2)}
+*Total: Tk ${total.toFixed(2)}*
+
+*Notes*
+${notes || 'None'}
+
+_Order placed via munchkin.cro website_
+            `.trim();
+
+            // Save order to localStorage
+            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
+            const orderId = Date.now();
+            orders.push({
+                id: orderId,
+                customer: name,
+                phone: `+880${phone}`,
+                address,
+                payment,
+                shipping: shippingLabel,
+                items: cart.map(i => `${i.name} ×${i.qty}`).join(', '),
+                total: total.toFixed(2),
+                date: new Date().toLocaleDateString('en-BD'),
+                status: 'Pending'
+            });
+            localStorage.setItem('munchkin-orders', JSON.stringify(orders));
+
+            // Clear cart
+            localStorage.removeItem('munchkin-cart');
+
+            // Open WhatsApp
+            window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+
+            // Close modal and redirect to tracking
+            closeCheckoutModal();
+            setTimeout(() => {
+                window.location.href = `track-order.html?id=${orderId}`;
+            }, 1500);
         }
     </script>
 </body>

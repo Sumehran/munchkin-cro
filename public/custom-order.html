@@ -192,11 +192,11 @@
                         <h3><i class="fa-solid fa-bangladeshi-taka-sign"></i> Budget</h3>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Minimum (৳)</label>
+                                <label>Minimum (Tk)</label>
                                 <input type="number" id="co-budget-min" placeholder="e.g. 300" min="0">
                             </div>
                             <div class="form-group">
-                                <label>Maximum (৳)</label>
+                                <label>Maximum (Tk)</label>
                                 <input type="number" id="co-budget-max" placeholder="e.g. 800" min="0">
                             </div>
                         </div>
@@ -224,7 +224,7 @@
             <!-- Info Sidebar -->
             <div class="custom-order-info">
                 <div class="co-info-card">
-                    <h3>How it works 🎀</h3>
+                    <h3>How it works</h3>
                     <div class="co-step">
                         <span class="co-step-num">1</span>
                         <div>
@@ -250,7 +250,7 @@
                         <span class="co-step-num">4</span>
                         <div>
                             <strong>Delivered to you</strong>
-                            <p>Packed with care and delivered within the agreed timeline 🚚</p>
+                            <p>Packed with care and delivered within the agreed timeline</p>
                         </div>
                     </div>
                 </div>
@@ -258,7 +258,7 @@
                 <div class="co-info-card">
                     <h3>Good to know ✨</h3>
                     <ul class="co-info-list">
-                        <li><i class="fa-solid fa-check"></i> Minimum order: ৳ 250</li>
+                        <li><i class="fa-solid fa-check"></i> Minimum order: Tk 250</li>
                         <li><i class="fa-solid fa-check"></i> Payment via bKash / Nagad</li>
                         <li><i class="fa-solid fa-check"></i> 50% advance required</li>
                         <li><i class="fa-solid fa-check"></i> Delivery: 7–21 days depending on complexity</li>
@@ -276,8 +276,8 @@
                 <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
                 <p class="footer-tagline">Crochet made with love, just for you.</p>
                 <div class="footer-info">
-                    <p>🚚 Delivery within: 14 days</p>
-                    <p>✉️ munchkincro@gmail.com</p>
+                    <p>Delivery within: 14 days</p>
+                    <p>munchkincro@gmail.com</p>
                 </div>
             </div>
             <div class="footer-col">
@@ -296,6 +296,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="shop.html">Shop</a></li>
                     <li><a href="about.html">About Us</a></li>
+                    <li><a href="custom-order.html">Custom Order</a></li>
                     <li><a href="track-order.html">Track Order</a></li>
                     <li><a href="cart.html">Cart</a></li>
                 </ul>
@@ -382,28 +383,28 @@
             const budgetMax = document.getElementById('co-budget-max').value;
             const deadline  = document.getElementById('co-deadline').value;
             const budget = budgetMin || budgetMax
-                ? `৳ ${budgetMin || '?'} – ৳ ${budgetMax || '?'}`
+                ? `Tk ${budgetMin || '?'} – Tk ${budgetMax || '?'}`
                 : 'Not specified';
 
             const message = `
-🎀 *Custom Order Request - munchkin.cro* 🎀
+*Custom Order Request - munchkin.cro*
 
 👤 *Customer*
 Name: ${name}
 Phone: +880${phone}
 
-🧶 *Order Details*
+*Order Details*
 Type: ${type}
 Quantity: ${qty}
 Colours: ${colours}
 Size: ${size}
 Occasion: ${occasion}
 
-📝 *Description*
+*Description*
 ${desc}
 
-💰 Budget: ${budget}
-📅 Needed by: ${deadline || 'Flexible'}
+Budget: ${budget}
+Needed by: ${deadline || 'Flexible'}
 
 _Sent via munchkin.cro custom order form_
             `.trim();
@@ -422,7 +423,7 @@ _Sent via munchkin.cro custom order form_
 
             window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
 
-            document.getElementById('co-success').textContent = '✅ Your custom order has been sent! We\'ll reply on WhatsApp within 24 hours 🎀';
+            document.getElementById('co-success').textContent = '✅ Your custom order has been sent! We\'ll reply on WhatsApp within 24 hours ';
             document.getElementById('custom-order-form').reset();
             removePreview();
         }

@@ -96,105 +96,7 @@
 
                 <!-- Product Grid -->
                 <div class="shop-grid" id="shopGrid">
-
-                    <!--
-                        HOW TO ADD A PRODUCT:
-                        Copy one .pro block below and fill in:
-                        - data-category   : keyrings / plushies / flowers / accessories / wearables / bags
-                        - data-price      : number (e.g. 35)
-                        - data-colors     : comma-separated colors available (e.g. "pink,white,blue")
-                        - img src         : your image path
-                        - category-tag    : display text
-                        - h4              : product name
-                        - .price          : Tk XX.00
-                        - addToCart()     : name and price
-                        - color swatches  : one per available color
-                    -->
-
-                    <div class="pro" data-category="plushies" data-price="550" data-colors="yellow">
-                        <img src="img/chef_chick.jpeg" alt="Chick Plushie">
-                        <div class="des">
-                            <span class="category-tag">Plushies</span>
-                            <h4>Michelin Chick Plush</h4>
-                            <p class="price">Tk 550.00</p>
-
-                            <!-- Color Picker -->
-                            <div class="color-picker">
-                                <p class="color-label">Color: <span class="chosen-color">Yellow</span></p>
-                                <div class="color-options">
-                                    <span class="color-dot" data-color="Yellow" style="background:#ffd166;" title="Yellow"></span>   
-                                </div>
-                            </div>
-
-                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Michelin Chick Plush', 550)">
-                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- EXAMPLE 2 — Keyring -->
-                    <div class="pro" data-category="keyrings" data-price="280" data-colors="pink,blue,green">
-                        <img src="img/flower_chick.png" alt="Flower Keyring">
-                        <div class="des">
-                            <span class="category-tag">Keyrings</span>
-                            <h4>Flower Keyring</h4>
-                            <p class="price">Tk 280.00</p>
-                            <div class="color-picker">
-                                <p class="color-label">Color: <span class="chosen-color">Pink</span></p>
-                                <div class="color-options">
-                                    <span class="color-dot selected" data-color="Pink" style="background:#ff869c;" title="Pink"></span>
-                                    <span class="color-dot" data-color="Blue" style="background:#a8d8ea;" title="Blue"></span>
-                                    <span class="color-dot" data-color="Green" style="background:#b5ead7;" title="Green"></span>
-                                </div>
-                            </div>
-                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Flower Keyring', 280)">
-                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- EXAMPLE 3 — Bag -->
-                    <div class="pro" data-category="bags" data-price="3500" data-colors="white,purple,brown">
-                        <img src="img/Shell_stitch_bag.jpeg" alt="Shell Stitch Bag">
-                        <div class="des">
-                            <span class="category-tag">Bags</span>
-                            <h4>Shell Stitch Bag</h4>
-                            <p class="price">Tk 3500.00</p>
-                            <div class="color-picker">
-                                <p class="color-label">Color: <span class="chosen-color">White</span></p>
-                                <div class="color-options">
-                                    <span class="color-dot selected" data-color="White" style="background:#f5f5f5; border:1px solid #ddd;" title="White"></span>
-                                    <span class="color-dot" data-color="Purple" style="background:#c3b1e1;" title="Purple"></span>
-                                    <span class="color-dot" data-color="Brown" style="background:#c8a882;" title="Brown"></span>
-                                </div>
-                            </div>
-                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Shell Stitch Bag', 3500)">
-                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="pro" data-category="flowers" data-price="280" data-colors="pink,blue,purple">
-                        <img src="img/Tulips.png" alt="Tulips">
-                        <div class="des">
-                            <span class="category-tag">Flowers</span>
-                            <h4>Tulips</h4>
-                            <p class="price">Tk 280.00</p>
-                            <div class="color-picker">
-                                <p class="color-label">Color: <span class="chosen-color">Pink</span></p>
-                                <div class="color-options">
-                                    <span class="color-dot selected" data-color="Pink" style="background:#ff869c;" title="Pink"></span>
-                                    <span class="color-dot" data-color="Yellow" style="background:#ffd166;" title="Yellow"></span> 
-                                    <span class="color-dot" data-color="Blue" style="background:#a8d8ea;" title="Blue"></span>
-                                    <span class="color-dot" data-color="Purple" style="background:#c3b1e1;" title="Purple"></span>
-                                </div>
-                            </div>
-                            <button class="add-to-cart" onclick="addToCartWithColor(this, 'Tulips', 280)">
-                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                            </button>
-                        </div>
-                    </div>
-                </div>             
+                </div>              
 
                 <!-- No results message -->
                 <div id="noResults" style="display:none;" class="no-results">
@@ -213,8 +115,8 @@
                 <img src="img/logo1.png" alt="munchkin.cro logo" class="footer-logo">
                 <p class="footer-tagline">Crochet made with love, just for you.</p>
                 <div class="footer-info">
-                    <p>🚚 Delivery within: 14 days</p>
-                    <p>✉️ munchkincro@gmail.com</p>
+                    <p>Delivery within: 14 days</p>
+                    <p>munchkincro@gmail.com</p>
                 </div>
             </div>
             <div class="footer-col">
@@ -279,7 +181,7 @@
     <div class="chat-body">
         <!-- Welcome bubble -->
         <div class="chat-message incoming">
-            <p>Hii! HiiWelcome to <strong>munchkin.cro</strong>!</p>
+            <p>Hii! Welcome to <strong>munchkin.cro</strong>!</p>
             <p>How can I help you today? Pick an option below or type your own message on WhatsApp 💬</p>
         </div>
  

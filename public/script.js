@@ -43,6 +43,28 @@ const DEFAULT_PRODUCTS = [
         dimensions: 'Approximately 8–10 cm tall. Slight size variations may occur as each piece is handmade.'
     },
     {
+        name: 'Michelin Chick Plush',
+        category: 'plushies',
+        price: 550,
+        colors: 'yellow',
+        image: 'img/chef_chick.jpeg',
+        images: ['img/chef_chick.jpeg'],
+        description: 'An adorable handmade crochet Michelin chef chick plushie — cute enough to be a gift or just a treat for yourself! 🐣👨‍🍳',
+        materials: ['4 ply milk cotton yarn', 'Polyfill stuffing', 'Safety eyes'],
+        dimensions: 'Approximately 10–12 cm tall.'
+    },
+    {
+        name: 'Shell Stitch Bag',
+        category: 'bags',
+        price: 3500,
+        colors: 'white,purple,brown',
+        image: 'img/Shell_stitch_bag.jpeg',
+        images: ['img/Shell_stitch_bag.jpeg'],
+        description: 'A beautiful handmade shell stitch crochet bag — stylish, spacious, and unique. Perfect for everyday use! 🧶👜',
+        materials: ['Cotton yarn', 'Bag handles', 'Inner lining'],
+        dimensions: 'Approximately 30 × 25 cm.'
+    },
+    {
         name: 'Tulips',
         category: 'flowers',
         price: 280,
@@ -68,7 +90,10 @@ const DEFAULT_PRODUCTS = [
 ];
  
      // ── Color dot picker ──────────────────────────────────────────
-        document.querySelectorAll('.color-options').forEach(group => {
+
+    const colorOptionGroups = document.querySelectorAll('.color-options');
+    if (colorOptionGroups.length > 0) {
+        colorOptionGroups.forEach(group => {
             group.querySelectorAll('.color-dot').forEach(dot => {
                 dot.addEventListener('click', () => {
                     group.querySelectorAll('.color-dot').forEach(d => d.classList.remove('selected'));
@@ -77,6 +102,8 @@ const DEFAULT_PRODUCTS = [
                 });
             });
         });
+    };
+
 
         // ── Add to cart with chosen color ─────────────────────────────
         function addToCartWithColor(btn, name, price) {
@@ -203,7 +230,7 @@ function addToCart(name, price) {
     localStorage.setItem('munchkin-cart', JSON.stringify(cart));
 
     // Show a quick toast notification
-    showToast(`"${name}" added to cart succesfully!`);
+    showToast(`"${name}" added to cart successfully!`);
 }
 
 // TOAST NOTIFICATION
@@ -361,7 +388,7 @@ function renderShopProducts() {
                 <div class="des">
                     <span class="category-tag">${p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>
                     <h4>${p.name}</h4>
-                    <p class="price">৳ ${parseFloat(p.price).toFixed(2)}</p>
+                    <p class="price">Tk ${parseFloat(p.price).toFixed(2)}</p>
                     ${ratingHtml}
                     <div class="color-picker" onclick="event.stopPropagation()">
                         <p class="color-label">Color: <span class="chosen-color">${firstColor.charAt(0).toUpperCase() + firstColor.slice(1)}</span></p>
@@ -414,201 +441,11 @@ function renderShopProducts() {
 // Run on shop page
 renderShopProducts();
 
-// =====================================================
-// PASTE ALL OF THIS AT THE BOTTOM OF script.js
-// Covers: Reviews, Ratings, Shipping Form
-// =====================================================
 
-
-// ── SAMPLE REVIEWS (shown on every product) ──────────
-const SAMPLE_REVIEWS = [
-    {
-        name: 'Nadia Islam',
-        rating: 5,
-        text: 'Absolutely love it! The quality is amazing and it arrived so well packaged. Will definitely order again 🎀',
-        //date: '15 Apr 2025',
-        photo: null
-    },
-    {
-        name: 'Sumaiya R.',
-        rating: 5,
-        text: 'Ordered a custom plushie for my sister\'s birthday — she was obsessed! The colour matching was perfect.',
-        //date: '2 Mar 2025',
-        photo: null
-    },
-    {
-        name: 'Tasnim H.',
-        rating: 4,
-        text: 'Super cute and well made! Took about 12 days which is reasonable. The crochet work is really neat.',
-        //date: '20 Feb 2025',
-        photo: null
-    }
-];
-
-
-// ── LOAD REVIEWS on product.html ─────────────────────
-function loadReviews(productName) {
-    const stored   = JSON.parse(localStorage.getItem(`reviews-${productName}`)) || [];
-    const allReviews = [...SAMPLE_REVIEWS, ...stored];
-
-    renderReviews(allReviews, productName);
+function getCurrentSubtotal() {
+    const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 }
-
-function renderReviews(allReviews, productName) {
-    // ── Rating summary ──
-    const total = allReviews.length;
-    const avg   = total ? (allReviews.reduce((s, r) => s + r.rating, 0) / total) : 0;
-
-    const avgEl = document.getElementById('avg-rating-number');
-    const countEl = document.getElementById('review-count-text');
-    if (avgEl) avgEl.textContent = avg.toFixed(1);
-    if (countEl) countEl.textContent = `Based on ${total} review${total !== 1 ? 's' : ''}`;
-
-    // Star display
-    const avgStarsEl = document.getElementById('avg-stars');
-    if (avgStarsEl) avgStarsEl.innerHTML = buildStars(avg);
-
-    // Breakdown bars
-    [5,4,3,2,1].forEach(n => {
-        const cnt  = allReviews.filter(r => r.rating === n).length;
-        const pct  = total ? (cnt / total * 100) : 0;
-        const bar  = document.getElementById(`bar-${n}`);
-        const cntEl = document.getElementById(`count-${n}`);
-        if (bar)  bar.style.width  = `${pct}%`;
-        if (cntEl) cntEl.textContent = cnt;
-    });
-
-    // ── Review cards ──
-    const list = document.getElementById('reviews-list');
-    if (!list) return;
-
-    if (allReviews.length === 0) {
-        list.innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">No reviews yet — be the first! 🎀</p>';
-        return;
-    }
-
-    list.innerHTML = allReviews.map(r => `
-        <div class="review-card">
-            <div class="review-card-header">
-                <div class="reviewer-avatar">${r.name.charAt(0).toUpperCase()}</div>
-                <div>
-                    <strong>${r.name}</strong>
-                    <div class="review-stars">${buildStars(r.rating)}</div>
-                </div>
-                <span class="review-date">${r.date}</span>
-            </div>
-            <p class="review-text">${r.text}</p>
-            ${r.photo ? `<img src="${r.photo}" alt="Review photo" class="review-photo">` : ''}
-        </div>
-    `).join('');
-}
-
-function buildStars(rating) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= Math.floor(rating)) html += '<i class="fa-solid fa-star"></i>';
-        else if (i - rating < 1)    html += '<i class="fa-solid fa-star-half-stroke"></i>';
-        else                         html += '<i class="fa-regular fa-star"></i>';
-    }
-    return html;
-}
-
-
-// ── STAR PICKER interaction ───────────────────────────
-function initStarPicker() {
-    const picker = document.getElementById('star-picker');
-    if (!picker) return;
-
-    const stars = picker.querySelectorAll('i');
-    stars.forEach((star, index) => {
-        star.addEventListener('mouseover', () => highlightStars(stars, index));
-        star.addEventListener('mouseout',  () => highlightStars(stars, parseInt(document.getElementById('review-rating').value) - 1));
-        star.addEventListener('click', () => {
-            document.getElementById('review-rating').value = index + 1;
-            highlightStars(stars, index);
-        });
-    });
-}
-
-function highlightStars(stars, upTo) {
-    stars.forEach((s, i) => {
-        s.className = i <= upTo ? 'fa-solid fa-star' : 'fa-regular fa-star';
-    });
-}
-
-function previewReviewPhoto(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const preview = document.getElementById('review-photo-preview');
-            if (preview) { preview.src = e.target.result; preview.style.display = 'block'; }
-        };
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-
-// ── SUBMIT REVIEW ─────────────────────────────────────
-function submitReview() {
-    const name   = document.getElementById('review-name')?.value.trim();
-    const rating = parseInt(document.getElementById('review-rating')?.value || '0');
-    const text   = document.getElementById('review-text')?.value.trim();
-    const errorEl = document.getElementById('review-error');
-    const photo  = document.getElementById('review-photo-preview')?.src || null;
-
-    if (errorEl) errorEl.textContent = '';
-
-    if (!name)        { if (errorEl) errorEl.textContent = 'Please enter your name.'; return; }
-    if (rating === 0) { if (errorEl) errorEl.textContent = 'Please select a star rating.'; return; }
-    if (!text)        { if (errorEl) errorEl.textContent = 'Please write your review.'; return; }
-
-    // Get product name from URL
-    const params = new URLSearchParams(window.location.search);
-    const productName = decodeURIComponent(params.get('name') || '');
-    if (!productName) return;
-
-    const newReview = {
-        name,
-        rating,
-        text,
-        date: new Date().toLocaleDateString('en-BD', { day: 'numeric', month: 'short', year: 'numeric' }),
-        photo: photo && photo !== '' && !photo.includes('undefined') ? photo : null
-    };
-
-    const stored = JSON.parse(localStorage.getItem(`reviews-${productName}`)) || [];
-    stored.push(newReview);
-    localStorage.setItem(`reviews-${productName}`, JSON.stringify(stored));
-
-    // Clear form
-    document.getElementById('review-name').value = '';
-    document.getElementById('review-rating').value = '0';
-    document.getElementById('review-text').value = '';
-    const preview = document.getElementById('review-photo-preview');
-    if (preview) { preview.src = ''; preview.style.display = 'none'; }
-    initStarPicker();
-
-    // Reload reviews
-    const allStored = JSON.parse(localStorage.getItem(`reviews-${productName}`)) || [];
-    renderReviews([...SAMPLE_REVIEWS, ...allStored], productName);
-
-    showToast('Review submitted! Thank you 🎀');
-}
-
-
-// ── SHIPPING DETAILS FORM (shown in cart.html) ────────
-// Add this HTML snippet to cart.html checkout modal
-// (inside .checkout-form, after the payment method field)
-// 
-// <div class="form-group" id="shipping-group">
-//   <label><i class="fa-solid fa-truck"></i> Shipping Method</label>
-//   <select id="co-shipping">
-//     <option value="standard">Standard Delivery (৳ 60) — 7–14 days</option>
-//     <option value="express">Express Delivery (৳ 120) — 3–5 days</option>
-//     <option value="pickup">Self Pickup — Free (Dhaka only)</option>
-//   </select>
-// </div>
-//
-// Then update updateSummary() with shipping cost logic:
 
 function getShippingCost() {
     const sel = document.getElementById('co-shipping');
@@ -617,16 +454,33 @@ function getShippingCost() {
     if (sel.value === 'pickup')  return 0;
     return 60;
 }
+function checkout() {
+    const session = JSON.parse(localStorage.getItem('munchkin-session'));
 
+    // If not logged in, redirect to login first
+    if (!session) {
+        alert('Please log in to place your order');
+        window.location.href = 'login.html';
+        return;
+    }
+
+    const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
+
+    alert('Thank you for your order! We will contact you via WhatsApp to confirm.');
+}
 // Updated updateSummary — REPLACE your existing one in cart.html
 function updateSummary(subtotal) {
     const delivery = subtotal > 0 ? getShippingCost() : 0;
     const subtotalEl  = document.getElementById('subtotal');
     const deliveryEl  = document.getElementById('delivery');
     const totalEl     = document.getElementById('total');
-    if (subtotalEl) subtotalEl.textContent = `৳ ${subtotal.toFixed(2)}`;
-    if (deliveryEl) deliveryEl.textContent = `৳ ${delivery.toFixed(2)}`;
-    if (totalEl)    totalEl.textContent    = `৳ ${(subtotal + delivery).toFixed(2)}`;
+    if (subtotalEl) subtotalEl.textContent = `Tk ${subtotal.toFixed(2)}`;
+    if (deliveryEl) deliveryEl.textContent = `Tk ${delivery.toFixed(2)}`;
+    if (totalEl)    totalEl.textContent    = `Tk ${(subtotal + delivery).toFixed(2)}`;
 }
 
 
@@ -638,9 +492,9 @@ function notifyCustomer(orderId, status) {
     if (!order) return;
 
     const messages = {
-        'Processing': `Hi ${order.customer}! 🧶 Your munchkin.cro order #${orderId} is now being crafted. We'll update you when it ships!`,
-        'Shipped':    `Hi ${order.customer}! 🚚 Your munchkin.cro order #${orderId} has been shipped! Expected delivery in a few days.`,
-        'Completed':  `Hi ${order.customer}! 🎀 Your order #${orderId} has been delivered! We hope you love it. Please leave us a review at munchkin.cro`,
+        'Processing': `Hi ${order.customer}! Your munchkin.cro order #${orderId} is now being crafted. We'll update you when it ships!`,
+        'Shipped':    `Hi ${order.customer}! Your munchkin.cro order #${orderId} has been shipped! Expected delivery in a few days.`,
+        'Completed':  `Hi ${order.customer}! Your order #${orderId} has been delivered! We hope you love it. Please leave us a review at munchkin.cro`,
         'Cancelled':  `Hi ${order.customer}, your munchkin.cro order #${orderId} has been cancelled. Please contact us if you have questions.`
     };
 
