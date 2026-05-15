@@ -194,10 +194,12 @@
         });
 
         // Auto-track from URL param (e.g. after checkout)
+        {
         const params = new URLSearchParams(window.location.search);
         if (params.get('id')) {
             document.getElementById('track-input').value = params.get('id');
             trackOrder();
+        }
         }
 
         function showOrderResult(order) {

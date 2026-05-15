@@ -22,6 +22,9 @@
             <a href="#" class="admin-nav-link" onclick="showTab('orders', this)">
                 <i class="fa-solid fa-box"></i> Orders
             </a>
+            <a href="#" class="admin-nav-link" onclick="showTab('customorders', this)">
+                 <i class="fa-solid fa-wand-magic-sparkles"></i> Custom Orders
+            </a>
             <a href="#" class="admin-nav-link" onclick="showTab('products', this)">
                 <i class="fa-solid fa-shirt"></i> Products
             </a>
@@ -82,6 +85,13 @@
                         <p>Pending Orders</p>
                     </div>
                 </div>
+                <div class="stat-card pink">
+                     <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <div>
+                        <h3 id="stat-custom">0</h3>
+                        <p>Custom Requests</p>
+                     </div>
+                </div>
             </div>
 
             <div class="admin-section">
@@ -128,7 +138,30 @@
                 </table>
             </div>
         </div>
-
+        <!-- ── TAB: CUSTOM ORDERS ── -->
+         <div id="tab-customorders" class="admin-tab">
+    <div class="admin-section">
+        <h3>Custom Order Requests</h3>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Phone</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Budget</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="custom-orders-table-body">
+                <tr><td colspan="9" class="empty-row">No custom orders yet.</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
         <!-- ── TAB: PRODUCTS ── -->
         <div id="tab-products" class="admin-tab">
             <div class="admin-section">
@@ -242,17 +275,20 @@
             if (tabId === 'orders') loadOrders();
             if (tabId === 'products') loadProducts();
             if (tabId === 'users') loadUsers();
+            if (tabId === 'customorders') loadCustomOrders();
         }
 
         // ── Load Dashboard ──
         function loadDashboard() {
             const orders  = JSON.parse(localStorage.getItem('munchkin-orders'))  || [];
             const users   = JSON.parse(localStorage.getItem('munchkin-users'))   || [];
+            const customOrders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
             const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];
             const pending = orders.filter(o => o.status === 'Pending').length;
 
             document.getElementById('stat-orders').textContent   = orders.length;
             document.getElementById('stat-users').textContent    = users.length;
+            document.getElementById('stat-custom').textContent = customOrders.length;
             document.getElementById('stat-products').textContent = products.length;
             document.getElementById('stat-pending').textContent  = pending;
 
@@ -324,7 +360,51 @@
             localStorage.setItem('munchkin-orders', JSON.stringify(orders));
             loadOrders();
         }
+        // ── Load Custom Orders ──
+        function loadCustomOrders() {
+    const orders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
+    const tbody  = document.getElementById('custom-orders-table-body');
 
+    if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty-row">No custom orders yet.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = orders.map((o, i) => `
+        <tr>
+            <td>#${o.id}</td>
+            <td>${o.name}</td>
+            <td>${o.phone}</td>
+            <td>${o.type}</td>
+            <td>${o.description?.substring(0, 40)}...</td>
+            <td>${o.budget || '—'}</td>
+            <td>${o.date}</td>
+            <td>
+                <span class="status-badge ${o.status?.toLowerCase().replace(' ', '-')}">
+                    ${o.status || 'New Request'}
+                </span>
+            </td>
+            <td>
+                <select onchange="updateCustomOrderStatus(${i}, this.value)" class="status-select">
+                    <option ${o.status==='New Request'?'selected':''}>New Request</option>
+                    <option ${o.status==='Under Review'?'selected':''}>Under Review</option>
+                    <option ${o.status==='Quoted'?'selected':''}>Quoted</option>
+                    <option ${o.status==='Accepted'?'selected':''}>Accepted</option>
+                    <option ${o.status==='In Progress'?'selected':''}>In Progress</option>
+                    <option ${o.status==='Completed'?'selected':''}>Completed</option>
+                    <option ${o.status==='Rejected'?'selected':''}>Rejected</option>
+                </select>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateCustomOrderStatus(index, status) {
+    const orders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
+    orders[index].status = status;
+    localStorage.setItem('munchkin-custom-orders', JSON.stringify(orders));
+    loadCustomOrders();
+}
         // ── Load Products ──
         function loadProducts() {
             const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];

@@ -626,6 +626,7 @@ function renderShopProducts() {
     });
  
     // URL param auto-filter
+    {
     const params = new URLSearchParams(window.location.search);
     const cat = params.get('category');
     if (cat) {
@@ -633,6 +634,7 @@ function renderShopProducts() {
         if (radio) { radio.checked = true; applyFilters(); }
     } else {
         applyFilters();
+    }
     }
 }
  
