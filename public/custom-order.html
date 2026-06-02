@@ -356,15 +356,17 @@
             }
         });
 
-        function submitCustomOrder() {
+        async function submitCustomOrder() {
             const name    = document.getElementById('co-name').value.trim();
             const phone   = document.getElementById('co-phone').value.trim();
             const type    = document.getElementById('co-type').value;
             const qty     = document.getElementById('co-qty').value;
             const desc    = document.getElementById('co-description').value.trim();
             const errorEl = document.getElementById('co-error');
+            const successEl = document.getElementById('co-success');
 
             errorEl.textContent = '';
+            successEl.textContent = '';
 
             if (!name)  { errorEl.textContent = 'Please enter your name.'; return; }
             if (!phone || !/^01[3-9]\d{8}$/.test(phone)) {
@@ -409,23 +411,39 @@ Needed by: ${deadline || 'Flexible'}
 _Sent via munchkin.cro custom order form_
             `.trim();
 
-            // Save to localStorage for admin panel
-            const customOrders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
-            customOrders.push({
-                id: Date.now(),
-                name, phone: `+880${phone}`,
-                type, qty, colours, size, occasion,
-                description: desc, budget, deadline: deadline || 'Flexible',
-                status: 'New Request',
-                date: new Date().toLocaleDateString('en-BD')
-            });
-            localStorage.setItem('munchkin-custom-orders', JSON.stringify(customOrders));
+            const whatsappWindow = window.open('', '_blank');
 
-            window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+            try {
+                await apiRequest('/api/custom-orders', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name,
+                        phone: `+880${phone}`,
+                        type,
+                        qty: Number(qty) || 1,
+                        colours,
+                        size,
+                        occasion,
+                        description: desc,
+                        budget,
+                        deadline: deadline || 'Flexible'
+                    })
+                });
 
-            document.getElementById('co-success').textContent = '✅ Your custom order has been sent! We\'ll reply on WhatsApp within 24 hours ';
-            document.getElementById('custom-order-form').reset();
-            removePreview();
+                const whatsappUrl = `https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`;
+                if (whatsappWindow) {
+                    whatsappWindow.location.href = whatsappUrl;
+                } else {
+                    window.location.href = whatsappUrl;
+                }
+
+                successEl.textContent = 'Your custom order has been sent! We will reply on WhatsApp within 24 hours.';
+                document.getElementById('custom-order-form').reset();
+                removePreview();
+            } catch (err) {
+                if (whatsappWindow) whatsappWindow.close();
+                errorEl.textContent = err.message || 'Could not send custom order.';
+            }
         }
     </script>
 </body>

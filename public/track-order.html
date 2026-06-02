@@ -166,26 +166,32 @@
 
     <script src="script.js"></script>
     <script>
-        function trackOrder() {
+        function formatItems(items) {
+            if (!Array.isArray(items)) return items || '-';
+            return items.map(item => {
+                const color = item.color ? ` (${item.color})` : '';
+                return `${item.name}${color} x${item.qty}`;
+            }).join(', ');
+        }
+
+        async function trackOrder() {
             const input = document.getElementById('track-input').value.trim();
             const errorEl = document.getElementById('track-error');
             errorEl.textContent = '';
 
             if (!input) { errorEl.textContent = 'Please enter an Order ID or phone number.'; return; }
 
-            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-            const order = orders.find(o =>
-                String(o.id) === input ||
-                (o.phone && o.phone.replace(/\D/g,'').includes(input.replace(/\D/g,'')))
-            );
+            const digits = input.replace(/\D/g, '');
+            const isMongoId = /^[0-9a-fA-F]{24}$/.test(input);
+            const query = isMongoId ? `id=${encodeURIComponent(input)}` : `phone=${encodeURIComponent(digits || input)}`;
 
-            if (!order) {
+            try {
+                const order = await apiRequest(`/api/orders/track?${query}`);
+                showOrderResult(order);
+            } catch (err) {
                 errorEl.textContent = 'No order found. Please check your Order ID or phone number.';
                 document.getElementById('track-result').style.display = 'none';
-                return;
             }
-
-            showOrderResult(order);
         }
 
         // Also allow pressing Enter
@@ -205,18 +211,18 @@
         function showOrderResult(order) {
             document.getElementById('track-result').style.display = 'block';
 
-            document.getElementById('tr-id').textContent       = order.id;
-            document.getElementById('tr-date').textContent     = `Placed on ${order.date}`;
+            document.getElementById('tr-id').textContent       = order._id;
+            document.getElementById('tr-date').textContent     = `Placed on ${new Date(order.createdAt).toLocaleDateString('en-BD')}`;
             document.getElementById('tr-customer').textContent = order.customer;
             document.getElementById('tr-phone').textContent    = order.phone || '—';
             document.getElementById('tr-address').textContent  = order.address || '—';
-            document.getElementById('tr-items').textContent    = order.items;
-            document.getElementById('tr-total').textContent    = `Tk ${order.total}`;
+            document.getElementById('tr-items').textContent    = formatItems(order.items);
+            document.getElementById('tr-total').textContent    = `Tk ${Number(order.total || 0).toFixed(2)}`;
 
             // Status badge
             const badge = document.getElementById('tr-status-badge');
             badge.textContent = order.status;
-            badge.className = `status-badge ${order.status.toLowerCase()}`;
+            badge.className = `status-badge ${order.status.toLowerCase().replace(/\s+/g, '-')}`;
 
             // Progress steps
             const stepOrder = ['Pending', 'Processing', 'Shipped', 'Completed'];

@@ -243,12 +243,87 @@
 
     <script src="script.js"></script>
     <script>
-        renderCart();
+        let currentCart = { items: [] };
+        let currentUser = null;
 
-        function renderCart() {
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+        async function api(path, options = {}) {
+            const { headers = {}, ...rest } = options;
+            const res = await fetch(path, {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                },
+                ...rest
+            });
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(data?.message || 'Request failed.');
+            }
+
+            return data;
+        }
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getCartItems() {
+            return currentCart.items || [];
+        }
+
+        function getShippingInfo() {
+            const shipping = document.getElementById('co-shipping')?.value || 'standard';
+
+            if (shipping === 'express') {
+                return { value: shipping, label: 'Express Delivery (Tk 120)', cost: 120 };
+            }
+
+            if (shipping === 'pickup') {
+                return { value: shipping, label: 'Self Pickup (Free)', cost: 0 };
+            }
+
+            return { value: shipping, label: 'Standard Delivery (Tk 60)', cost: 60 };
+        }
+
+        async function loadCurrentUser() {
+            try {
+                const data = await api('/api/auth/me');
+                currentUser = data.user;
+            } catch (err) {
+                currentUser = null;
+            }
+        }
+
+        async function renderCart() {
             const container = document.getElementById('cartItems');
             const emptyMsg = document.getElementById('emptyMsg');
+
+            try {
+                currentCart = await api('/api/cart');
+            } catch (err) {
+                if (err.message.toLowerCase().includes('authorized')) {
+                    alert('Please log in to view your cart.');
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                emptyMsg.style.display = 'flex';
+                emptyMsg.querySelector('p').textContent = 'Could not load your cart.';
+                updateSummary(0);
+                return;
+            }
+
+            const cart = getCartItems();
+
+            container.querySelectorAll('.cart-item').forEach(el => el.remove());
 
             if (cart.length === 0) {
                 emptyMsg.style.display = 'flex';
@@ -258,27 +333,23 @@
 
             emptyMsg.style.display = 'none';
 
-            // Remove old items (keep emptyMsg)
-            const existing = container.querySelectorAll('.cart-item');
-            existing.forEach(el => el.remove());
-
             let subtotal = 0;
-            cart.forEach((item, index) => {
+            cart.forEach((item) => {
                 subtotal += item.price * item.qty;
                 const div = document.createElement('div');
                 div.className = 'cart-item';
                 div.innerHTML = `
                     <div class="cart-item-info">
-                        <h4>${item.name}</h4>
-                        <p class="price">Tk ${item.price.toFixed(2)}</p>
+                        <h4>${escapeHtml(item.name)}${item.color ? ` (${escapeHtml(item.color)})` : ''}</h4>
+                        <p class="price">Tk ${Number(item.price).toFixed(2)}</p>
                     </div>
                     <div class="cart-item-qty">
-                        <button onclick="changeQty(${index}, -1)">−</button>
+                        <button onclick="changeQty('${item._id}', ${item.qty - 1})">−</button>
                         <span>${item.qty}</span>
-                        <button onclick="changeQty(${index}, 1)">+</button>
+                        <button onclick="changeQty('${item._id}', ${item.qty + 1})">+</button>
                     </div>
                     <p class="cart-item-total">Tk ${(item.price * item.qty).toFixed(2)}</p>
-                    <button class="remove-btn" onclick="removeItem(${index})">
+                    <button class="remove-btn" onclick="removeItem('${item._id}')">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 `;
@@ -288,39 +359,72 @@
             updateSummary(subtotal);
         }
 
-function updateSummary(subtotal) {
-    const delivery = subtotal > 0 ? 60 : 0;
-    const subtotalEl = document.getElementById('subtotal');
-    const deliveryEl = document.getElementById('delivery');
-    const totalEl    = document.getElementById('total');
-    if (subtotalEl) subtotalEl.textContent = `Tk ${subtotal.toFixed(2)}`;
-    if (deliveryEl) deliveryEl.textContent = `Tk ${delivery.toFixed(2)}`;
-    if (totalEl)    totalEl.textContent    = `Tk ${(subtotal + delivery).toFixed(2)}`;
-}
-
-        function changeQty(index, delta) {
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-            cart[index].qty += delta;
-            if (cart[index].qty <= 0) cart.splice(index, 1);
-            localStorage.setItem('munchkin-cart', JSON.stringify(cart));
-            renderCart();
+        function updateSummary(subtotal) {
+            const delivery = subtotal > 0 ? getShippingInfo().cost : 0;
+            const subtotalEl = document.getElementById('subtotal');
+            const deliveryEl = document.getElementById('delivery');
+            const totalEl    = document.getElementById('total');
+            if (subtotalEl) subtotalEl.textContent = `Tk ${subtotal.toFixed(2)}`;
+            if (deliveryEl) deliveryEl.textContent = `Tk ${delivery.toFixed(2)}`;
+            if (totalEl)    totalEl.textContent    = `Tk ${(subtotal + delivery).toFixed(2)}`;
+            updateModalSummary();
         }
 
-        function removeItem(index) {
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-            cart.splice(index, 1);
-            localStorage.setItem('munchkin-cart', JSON.stringify(cart));
-            renderCart();
+        async function changeQty(itemId, qty) {
+            try {
+                if (qty < 1) {
+                    await removeItem(itemId);
+                    return;
+                }
+
+                await api(`/api/cart/items/${itemId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ qty })
+                });
+                await renderCart();
+            } catch (err) {
+                showToast(err.message || 'Could not update cart.');
+            }
         }
 
-        function checkout() {
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-            if (cart.length === 0) {
-                showToast('Your cart is empty! 🛒');
+        async function removeItem(itemId) {
+            try {
+                await api(`/api/cart/items/${itemId}`, { method: 'DELETE' });
+                await renderCart();
+            } catch (err) {
+                showToast(err.message || 'Could not remove item.');
+            }
+        }
+
+        async function checkout() {
+            if (!currentUser) {
+                alert('Please log in to place your order.');
+                window.location.href = 'login.html';
                 return;
             }
 
-            // Populate modal order summary
+            const cart = getCartItems();
+            if (cart.length === 0) {
+                showToast('Your cart is empty!');
+                return;
+            }
+
+            updateModalSummary();
+
+            const nameEl = document.getElementById('co-name');
+            if (nameEl && !nameEl.value.trim()) {
+                nameEl.value = currentUser.name || '';
+            }
+
+            const overlay = document.getElementById('checkout-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function updateModalSummary() {
+            const cart = getCartItems();
             const itemsContainer = document.getElementById('modal-order-items');
             let subtotal = 0;
 
@@ -330,7 +434,7 @@ function updateSummary(subtotal) {
                     subtotal += lineTotal;
                     return `
                         <div class="modal-item-row">
-                            <span>${item.name} × ${item.qty}</span>
+                            <span>${escapeHtml(item.name)}${item.color ? ` (${escapeHtml(item.color)})` : ''} x ${item.qty}</span>
                             <span>Tk ${lineTotal.toFixed(2)}</span>
                         </div>
                     `;
@@ -339,32 +443,16 @@ function updateSummary(subtotal) {
                 cart.forEach(item => subtotal += item.price * item.qty);
             }
 
-            const delivery = 60;
-            const total = subtotal + delivery;
+            const delivery = subtotal > 0 ? getShippingInfo().cost : 0;
 
             const modalSubtotal = document.getElementById('modal-subtotal');
             const modalDelivery = document.getElementById('modal-delivery');
             const modalTotal    = document.getElementById('modal-total');
             if (modalSubtotal) modalSubtotal.textContent = `Tk ${subtotal.toFixed(2)}`;
             if (modalDelivery) modalDelivery.textContent = `Tk ${delivery.toFixed(2)}`;
-            if (modalTotal)    modalTotal.textContent    = `Tk ${total.toFixed(2)}`;
-
-            // Pre-fill name if logged in
-            const session = JSON.parse(localStorage.getItem('munchkin-session'));
-            if (session) {
-                const nameEl = document.getElementById('co-name');
-                if (nameEl) nameEl.value = session.name || '';
-            }
-
-            // Show modal
-            const overlay = document.getElementById('checkout-overlay');
-            if (overlay) {
-                overlay.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            }
+            if (modalTotal)    modalTotal.textContent    = `Tk ${(subtotal + delivery).toFixed(2)}`;
         }
 
-        // ── Close modal ──
         function closeCheckoutModal() {
             document.getElementById('checkout-overlay').classList.add('hidden');
             document.body.style.overflow = '';
@@ -374,48 +462,44 @@ function updateSummary(subtotal) {
             if (event.target.id === 'checkout-overlay') closeCheckoutModal();
         }
 
-        // ── Get current subtotal from cart ──
         function getCurrentSubtotal() {
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-            return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            return getCartItems().reduce((sum, item) => sum + item.price * item.qty, 0);
         }
 
-        // ── Confirm order + send to WhatsApp ──
         const SHOP_WHATSAPP = '8801576652249';
 
-        function confirmOrderWhatsApp() {
+        async function confirmOrderWhatsApp() {
             const name    = document.getElementById('co-name').value.trim();
             const phone   = document.getElementById('co-phone').value.trim();
             const address = document.getElementById('co-address').value.trim();
             const payment = document.getElementById('co-payment').value;
-            const shipping = document.getElementById('co-shipping')?.value || 'standard';
+            const shipping = getShippingInfo();
             const notes   = document.getElementById('co-notes').value.trim();
             const errorEl = document.getElementById('checkout-error');
 
             errorEl.textContent = '';
 
-            // Validation
             if (!name) { errorEl.textContent = 'Please enter your full name.'; return; }
             if (!phone || !/^01[3-9]\d{8}$/.test(phone)) {
                 errorEl.textContent = 'Please enter a valid Bangladesh phone number (e.g. 01712345678).'; return;
             }
             if (!address) { errorEl.textContent = 'Please enter your delivery address.'; return; }
 
-            // Build cart summary
-            const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+            const cart = getCartItems();
+            if (cart.length === 0) {
+                errorEl.textContent = 'Your cart is empty.';
+                return;
+            }
+
             let subtotal = 0;
             const itemLines = cart.map(item => {
                 subtotal += item.price * item.qty;
-                return `• ${item.name} × ${item.qty} = Tk ${(item.price * item.qty).toFixed(2)}`;
+                const color = item.color ? ` (${item.color})` : '';
+                return `- ${item.name}${color} x ${item.qty} = Tk ${(item.price * item.qty).toFixed(2)}`;
             }).join('\n');
 
-            const deliveryCost = shipping === 'express' ? 120 : shipping === 'pickup' ? 0 : 60;
-            const shippingLabel = shipping === 'express' ? 'Express Delivery (Tk 120)' :
-                                  shipping === 'pickup'  ? 'Self Pickup (Free)' :
-                                  'Standard Delivery (Tk 60)';
-            const total = subtotal + deliveryCost;
+            const total = subtotal + shipping.cost;
 
-            // WhatsApp message
             const message = `
 *New Order - munchkin.cro* 
 
@@ -424,14 +508,14 @@ Name: ${name}
 Phone: +880${phone}
 Address: ${address}
 Payment: ${payment}
-Shipping: ${shippingLabel}
+Shipping: ${shipping.label}
 
 *Order Items*
 ${itemLines}
 
 *Price Breakdown*
 Subtotal: Tk ${subtotal.toFixed(2)}
-Delivery: Tk ${deliveryCost.toFixed(2)}
+Delivery: Tk ${shipping.cost.toFixed(2)}
 *Total: Tk ${total.toFixed(2)}*
 
 *Notes*
@@ -440,35 +524,46 @@ ${notes || 'None'}
 _Order placed via munchkin.cro website_
             `.trim();
 
-            // Save order to localStorage
-            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-            const orderId = Date.now();
-            orders.push({
-                id: orderId,
-                customer: name,
-                phone: `+880${phone}`,
-                address,
-                payment,
-                shipping: shippingLabel,
-                items: cart.map(i => `${i.name} ×${i.qty}`).join(', '),
-                total: total.toFixed(2),
-                date: new Date().toLocaleDateString('en-BD'),
-                status: 'Pending'
-            });
-            localStorage.setItem('munchkin-orders', JSON.stringify(orders));
+            const whatsappWindow = window.open('', '_blank');
 
-            // Clear cart
-            localStorage.removeItem('munchkin-cart');
+            try {
+                const order = await api('/api/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        customer: name,
+                        phone: `+880${phone}`,
+                        address,
+                        payment,
+                        shipping: shipping.label,
+                        deliveryCost: shipping.cost,
+                        notes
+                    })
+                });
 
-            // Open WhatsApp
-            window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`, '_blank');
+                currentCart = { items: [] };
+                const whatsappUrl = `https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(message)}`;
+                if (whatsappWindow) {
+                    whatsappWindow.location.href = whatsappUrl;
+                } else {
+                    window.location.href = whatsappUrl;
+                }
 
-            // Close modal and redirect to tracking
-            closeCheckoutModal();
-            setTimeout(() => {
-                window.location.href = `track-order.html?id=${orderId}`;
-            }, 1500);
+                closeCheckoutModal();
+                setTimeout(() => {
+                    window.location.href = `track-order.html?id=${order._id}`;
+                }, 800);
+            } catch (err) {
+                if (whatsappWindow) whatsappWindow.close();
+                errorEl.textContent = err.message || 'Could not place order.';
+            }
         }
+
+        async function initCartPage() {
+            await loadCurrentUser();
+            await renderCart();
+        }
+
+        initCartPage();
     </script>
 </body>
 </html>

@@ -253,17 +253,77 @@
 
     <script src="script.js"></script>
     <script>
-        const ADMIN_EMAIL = 'munchkin.cro@gmail.com';
+        let currentAdmin = null;
+        let currentOrders = [];
 
-        // ── Auth guard ──
-        const session = JSON.parse(localStorage.getItem('munchkin-session'));
-        if (!session || session.role !== 'admin') {
-            window.location.href = 'login.html';
-        } else {
-            document.getElementById('admin-name-display').textContent = session.name || 'Admin';
+        async function api(path, options = {}) {
+            const { headers = {}, ...rest } = options;
+            const res = await fetch(path, {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                },
+                ...rest
+            });
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(data?.message || 'Request failed.');
+            }
+
+            return data;
         }
 
-        // ── Tab switching ──
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function formatDate(value) {
+            return value ? new Date(value).toLocaleDateString('en-BD') : '-';
+        }
+
+        function formatMoney(value) {
+            return Number(value || 0).toFixed(2);
+        }
+
+        function formatItems(items) {
+            if (!Array.isArray(items)) return escapeHtml(items || '-');
+            return items.map(item => `${escapeHtml(item.name)} x${Number(item.qty || 1)}`).join(', ');
+        }
+
+        function statusClass(status = '') {
+            return status.toLowerCase().replace(/\s+/g, '-');
+        }
+
+        function showTableError(tbodyId, colspan, message) {
+            document.getElementById(tbodyId).innerHTML =
+                `<tr><td colspan="${colspan}" class="empty-row">${escapeHtml(message)}</td></tr>`;
+        }
+
+        async function requireAdmin() {
+            try {
+                const data = await api('/api/auth/me');
+
+                if (!data.user || data.user.role !== 'admin') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentAdmin = data.user;
+                document.getElementById('admin-name-display').textContent = currentAdmin.name || 'Admin';
+                await loadDashboard();
+            } catch (err) {
+                window.location.href = 'login.html';
+            }
+        }
+
         function showTab(tabId, link) {
             document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.admin-nav-link').forEach(l => l.classList.remove('active'));
@@ -271,6 +331,7 @@
             if (link) link.classList.add('active');
             document.getElementById('admin-page-title').textContent =
                 tabId.charAt(0).toUpperCase() + tabId.slice(1);
+
             if (tabId === 'dashboard') loadDashboard();
             if (tabId === 'orders') loadOrders();
             if (tabId === 'products') loadProducts();
@@ -278,219 +339,274 @@
             if (tabId === 'customorders') loadCustomOrders();
         }
 
-        // ── Load Dashboard ──
-        function loadDashboard() {
-            const orders  = JSON.parse(localStorage.getItem('munchkin-orders'))  || [];
-            const users   = JSON.parse(localStorage.getItem('munchkin-users'))   || [];
-            const customOrders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
-            const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            const pending = orders.filter(o => o.status === 'Pending').length;
+        async function loadDashboard() {
+            try {
+                const [orders, users, customOrders, products] = await Promise.all([
+                    api('/api/orders'),
+                    api('/api/auth/users'),
+                    api('/api/custom-orders'),
+                    api('/api/products?includeInactive=true')
+                ]);
+                const pending = orders.filter(o => o.status === 'Pending').length;
 
-            document.getElementById('stat-orders').textContent   = orders.length;
-            document.getElementById('stat-users').textContent    = users.length;
-            document.getElementById('stat-custom').textContent = customOrders.length;
-            document.getElementById('stat-products').textContent = products.length;
-            document.getElementById('stat-pending').textContent  = pending;
+                document.getElementById('stat-orders').textContent = orders.length;
+                document.getElementById('stat-users').textContent = users.length;
+                document.getElementById('stat-custom').textContent = customOrders.length;
+                document.getElementById('stat-products').textContent = products.length;
+                document.getElementById('stat-pending').textContent = pending;
 
-            const tbody = document.getElementById('recent-orders-body');
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No orders yet.</td></tr>';
-                return;
+                const tbody = document.getElementById('recent-orders-body');
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No orders yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.slice(0, 5).map(o => `
+                    <tr>
+                        <td>#${escapeHtml(o._id)}</td>
+                        <td>${escapeHtml(o.customer)}</td>
+                        <td>${formatItems(o.items)}</td>
+                        <td>Tk ${formatMoney(o.total)}</td>
+                        <td><span class="status-badge ${statusClass(o.status)}">${escapeHtml(o.status)}</span></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showTableError('recent-orders-body', 5, err.message);
             }
-            tbody.innerHTML = orders.slice(-5).reverse().map(o => `
-                <tr>
-                    <td>#${o.id}</td>
-                    <td>${o.customer}</td>
-                    <td>${o.items}</td>
-                    <td>Tk ${o.total}</td>
-                    <td><span class="status-badge ${o.status.toLowerCase()}">${o.status}</span></td>
-                </tr>
-            `).join('');
         }
 
-        // ── Load Orders ──
-        function loadOrders() {
-            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-            const tbody = document.getElementById('orders-table-body');
-            if (orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No orders yet.</td></tr>';
-                return;
+        async function loadOrders() {
+            try {
+                currentOrders = await api('/api/orders');
+                const tbody = document.getElementById('orders-table-body');
+
+                if (currentOrders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty-row">No orders yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = currentOrders.map(o => `
+                    <tr>
+                        <td>#${escapeHtml(o._id)}</td>
+                        <td>${escapeHtml(o.customer)}</td>
+                        <td>${formatItems(o.items)}</td>
+                        <td>Tk ${formatMoney(o.total)}</td>
+                        <td>${formatDate(o.createdAt)}</td>
+                        <td><span class="status-badge ${statusClass(o.status)}">${escapeHtml(o.status)}</span></td>
+                        <td>
+                            <select onchange="updateOrderStatus('${o._id}', this.value)" class="status-select">
+                                <option ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                                <option ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                                <option ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                            </select>
+                            <button class="notify-btn" onclick="notifyCustomer('${o._id}')">
+                                <i class="fa-brands fa-whatsapp"></i> Notify
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showTableError('orders-table-body', 7, err.message);
             }
-            tbody.innerHTML = orders.map((o, i) => `
-                <tr>
-                    <td>#${o.id}</td>
-                    <td>${o.customer}</td>
-                    <td>${o.items}</td>
-                    <td>Tk ${o.total}</td>
-                    <td>${o.date}</td>
-                    <td><span class="status-badge ${o.status.toLowerCase()}">${o.status}</span></td>
-                    <td>
-                        <select onchange="updateOrderStatus(${i}, this.value)" class="status-select">
-                            <option ${o.status==='Pending'?'selected':''}>Pending</option>
-                            <option ${o.status==='Processing'?'selected':''}>Processing</option>
-                            <option ${o.status==='Shipped'?'selected':''}>Shipped</option>
-                            <option ${o.status==='Completed'?'selected':''}>Completed</option>
-                            <option ${o.status==='Cancelled'?'selected':''}>Cancelled</option>
-                        </select>
-                        <button class="notify-btn" onclick="notifyCustomer('${o.id}', '${o.status}')">
-                            <i class="fa-brands fa-whatsapp"></i> Notify
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
         }
 
-        function updateOrderStatus(index, status) {
-            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-            orders[index].status = status;
-            localStorage.setItem('munchkin-orders', JSON.stringify(orders));
-            loadOrders();
-        }
-
-        function addSampleOrder() {
-            const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-            orders.push({
-                id: Date.now(),
-                customer: 'Sample Customer',
-                items: 'Chick holding Flower (Pink) x1',
-                total: '43.00',
-                date: new Date().toLocaleDateString(),
-                status: 'Pending'
+        async function updateOrderStatus(id, status) {
+            await api(`/api/orders/${id}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status })
             });
-            localStorage.setItem('munchkin-orders', JSON.stringify(orders));
-            loadOrders();
+            await loadOrders();
         }
-        // ── Load Custom Orders ──
-        function loadCustomOrders() {
-    const orders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
-    const tbody  = document.getElementById('custom-orders-table-body');
 
-    if (orders.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="empty-row">No custom orders yet.</td></tr>';
-        return;
-    }
+        async function addSampleOrder() {
+            await api('/api/orders', {
+                method: 'POST',
+                body: JSON.stringify({
+                    customer: 'Sample Customer',
+                    phone: '+8801712345678',
+                    address: 'Sample delivery address',
+                    payment: 'bKash',
+                    shipping: 'Standard Delivery',
+                    deliveryCost: 60,
+                    notes: 'Sample order created from admin panel.',
+                    items: [{
+                        name: 'Chick holding Flower',
+                        price: 350,
+                        qty: 1,
+                        color: 'Pink',
+                        image: 'img/flower_chick.png'
+                    }]
+                })
+            });
+            await loadOrders();
+        }
 
-    tbody.innerHTML = orders.map((o, i) => `
-        <tr>
-            <td>#${o.id}</td>
-            <td>${o.name}</td>
-            <td>${o.phone}</td>
-            <td>${o.type}</td>
-            <td>${o.description?.substring(0, 40)}...</td>
-            <td>${o.budget || '—'}</td>
-            <td>${o.date}</td>
-            <td>
-                <span class="status-badge ${o.status?.toLowerCase().replace(' ', '-')}">
-                    ${o.status || 'New Request'}
-                </span>
-            </td>
-            <td>
-                <select onchange="updateCustomOrderStatus(${i}, this.value)" class="status-select">
-                    <option ${o.status==='New Request'?'selected':''}>New Request</option>
-                    <option ${o.status==='Under Review'?'selected':''}>Under Review</option>
-                    <option ${o.status==='Quoted'?'selected':''}>Quoted</option>
-                    <option ${o.status==='Accepted'?'selected':''}>Accepted</option>
-                    <option ${o.status==='In Progress'?'selected':''}>In Progress</option>
-                    <option ${o.status==='Completed'?'selected':''}>Completed</option>
-                    <option ${o.status==='Rejected'?'selected':''}>Rejected</option>
-                </select>
-            </td>
-        </tr>
-    `).join('');
-}
+        async function loadCustomOrders() {
+            try {
+                const orders = await api('/api/custom-orders');
+                const tbody = document.getElementById('custom-orders-table-body');
 
-function updateCustomOrderStatus(index, status) {
-    const orders = JSON.parse(localStorage.getItem('munchkin-custom-orders')) || [];
-    orders[index].status = status;
-    localStorage.setItem('munchkin-custom-orders', JSON.stringify(orders));
-    loadCustomOrders();
-}
-        // ── Load Products ──
-        function loadProducts() {
-            const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            const tbody = document.getElementById('products-table-body');
-            if (products.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No products added yet.</td></tr>';
-                return;
+                if (orders.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty-row">No custom orders yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = orders.map(o => `
+                    <tr>
+                        <td>#${escapeHtml(o._id)}</td>
+                        <td>${escapeHtml(o.name)}</td>
+                        <td>${escapeHtml(o.phone)}</td>
+                        <td>${escapeHtml(o.type)}</td>
+                        <td>${escapeHtml((o.description || '').substring(0, 40))}...</td>
+                        <td>${escapeHtml(o.budget || '-')}</td>
+                        <td>${formatDate(o.createdAt)}</td>
+                        <td>
+                            <span class="status-badge ${statusClass(o.status)}">
+                                ${escapeHtml(o.status || 'New Request')}
+                            </span>
+                        </td>
+                        <td>
+                            <select onchange="updateCustomOrderStatus('${o._id}', this.value)" class="status-select">
+                                <option ${o.status === 'New Request' ? 'selected' : ''}>New Request</option>
+                                <option ${o.status === 'Under Review' ? 'selected' : ''}>Under Review</option>
+                                <option ${o.status === 'Quoted' ? 'selected' : ''}>Quoted</option>
+                                <option ${o.status === 'Accepted' ? 'selected' : ''}>Accepted</option>
+                                <option ${o.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                <option ${o.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                <option ${o.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                            </select>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showTableError('custom-orders-table-body', 9, err.message);
             }
-            tbody.innerHTML = products.map((p, i) => `
-                <tr>
-                    <td>${p.name}</td>
-                    <td><span class="category-tag">${p.category}</span></td>
-                    <td>Tk ${parseFloat(p.price).toFixed(2)}</td>
-                    <td>${p.colors}</td>
-                    <td><button class="delete-btn" onclick="deleteProduct(${i})"><i class="fa-solid fa-trash"></i> Delete</button></td>
-                </tr>
-            `).join('');
+        }
+
+        async function updateCustomOrderStatus(id, status) {
+            await api(`/api/custom-orders/${id}/status`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status })
+            });
+            await loadCustomOrders();
+        }
+
+        async function loadProducts() {
+            try {
+                const products = await api('/api/products?includeInactive=true');
+                const tbody = document.getElementById('products-table-body');
+
+                if (products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No products added yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = products.map(p => `
+                    <tr>
+                        <td>${escapeHtml(p.name)}</td>
+                        <td><span class="category-tag">${escapeHtml(p.category)}</span></td>
+                        <td>Tk ${formatMoney(p.price)}</td>
+                        <td>${escapeHtml(p.colors || '-')}</td>
+                        <td><button class="delete-btn" onclick="deleteProduct('${p._id}')"><i class="fa-solid fa-trash"></i> Delete</button></td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showTableError('products-table-body', 5, err.message);
+            }
         }
 
         function toggleAddProductForm() {
             document.getElementById('add-product-form').classList.toggle('hidden');
         }
 
-        function saveProduct() {
+        async function saveProduct() {
             const name     = document.getElementById('prod-name').value.trim();
             const category = document.getElementById('prod-category').value;
             const price    = document.getElementById('prod-price').value;
             const colors   = document.getElementById('prod-colors').value.trim();
-            const image    = document.getElementById('prod-image').value.trim();
+            const imageInput = document.getElementById('prod-image').value.trim();
+            const image = imageInput && !imageInput.startsWith('img/') ? `img/${imageInput}` : imageInput;
             const errorEl  = document.getElementById('prod-error');
 
-            if (!name || !price) { errorEl.textContent = 'Name and price are required.'; return; }
-            errorEl.textContent = '';
-
-            const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            products.push({ name, category, price, colors, image });
-            localStorage.setItem('munchkin-products', JSON.stringify(products));
-
-            // Clear form
-            ['prod-name','prod-price','prod-colors','prod-image'].forEach(id => document.getElementById(id).value = '');
-            toggleAddProductForm();
-            loadProducts();
-        }
-
-        function deleteProduct(index) {
-            if (!confirm('Delete this product?')) return;
-            const products = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            products.splice(index, 1);
-            localStorage.setItem('munchkin-products', JSON.stringify(products));
-            loadProducts();
-        }
-
-        // ── Load Users ──
-        function loadUsers() {
-            const users = JSON.parse(localStorage.getItem('munchkin-users')) || [];
-            const tbody = document.getElementById('users-table-body');
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No users registered yet.</td></tr>';
+            if (!name || !price) {
+                errorEl.textContent = 'Name and price are required.';
                 return;
             }
-            tbody.innerHTML = users.map((u, i) => `
-                <tr>
-                    <td>${u.name}</td>
-                    <td>${u.email}</td>
-                    <td><span class="role-badge ${u.email === ADMIN_EMAIL ? 'admin' : 'user'}">${u.email === ADMIN_EMAIL ? 'Admin' : 'User'}</span></td>
-                    <td>${u.joinedAt || '—'}</td>
-                    <td>${u.email !== ADMIN_EMAIL ? `<button class="delete-btn" onclick="deleteUser(${i})"><i class="fa-solid fa-trash"></i> Remove</button>` : '—'}</td>
-                </tr>
-            `).join('');
+
+            errorEl.textContent = '';
+
+            try {
+                await api('/api/products', {
+                    method: 'POST',
+                    body: JSON.stringify({ name, category, price: Number(price), colors, image })
+                });
+
+                ['prod-name','prod-price','prod-colors','prod-image'].forEach(id => document.getElementById(id).value = '');
+                toggleAddProductForm();
+                await loadProducts();
+            } catch (err) {
+                errorEl.textContent = err.message;
+            }
         }
 
-        function deleteUser(index) {
+        async function deleteProduct(id) {
+            if (!confirm('Delete this product?')) return;
+            await api(`/api/products/${id}`, { method: 'DELETE' });
+            await loadProducts();
+        }
+
+        async function loadUsers() {
+            try {
+                const users = await api('/api/auth/users');
+                const tbody = document.getElementById('users-table-body');
+
+                if (users.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="empty-row">No users registered yet.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = users.map(u => `
+                    <tr>
+                        <td>${escapeHtml(u.name)}</td>
+                        <td>${escapeHtml(u.email)}</td>
+                        <td><span class="role-badge ${escapeHtml(u.role)}">${escapeHtml(u.role)}</span></td>
+                        <td>${formatDate(u.createdAt)}</td>
+                        <td>${u._id !== currentAdmin?._id ? `<button class="delete-btn" onclick="deleteUser('${u._id}')"><i class="fa-solid fa-trash"></i> Remove</button>` : '-'}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showTableError('users-table-body', 5, err.message);
+            }
+        }
+
+        async function deleteUser(id) {
             if (!confirm('Remove this user?')) return;
-            const users = JSON.parse(localStorage.getItem('munchkin-users')) || [];
-            users.splice(index, 1);
-            localStorage.setItem('munchkin-users', JSON.stringify(users));
-            loadUsers();
+            await api(`/api/auth/users/${id}`, { method: 'DELETE' });
+            await loadUsers();
         }
 
-        function adminLogout() {
-            localStorage.removeItem('munchkin-session');
+        function notifyCustomer(orderId) {
+            const order = currentOrders.find(o => o._id === orderId);
+            if (!order) return;
+
+            const phone = String(order.phone || '').replace(/\D/g, '');
+            if (!phone) {
+                alert('This order does not have a phone number.');
+                return;
+            }
+
+            const message = `Hello ${order.customer}, your munchkin.cro order #${order._id} is now ${order.status}.`;
+            window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        async function adminLogout() {
+            await api('/api/auth/logout', { method: 'POST' });
             window.location.href = 'login.html';
         }
 
-        // Init
-        loadDashboard();
+        requireAdmin();
     </script>
 </body>
 </html>

@@ -227,14 +227,24 @@
         };
 
         // ── Load product ──────────────────────────────────
-        function loadProduct() {
+        async function loadProduct() {
             const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
             const productName = decodeURIComponent(params.get('name') || '');
-            if (!productName) { window.location.href = 'shop.html'; return; }
+            if (!productId && !productName) { window.location.href = 'shop.html'; return; }
 
-            const adminProducts = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            const allProducts   = [...DEFAULT_PRODUCTS, ...adminProducts];
-            const product = allProducts.find(p => p.name === productName);
+            let product = null;
+            try {
+                if (productId) {
+                    product = await apiRequest(`/api/products/${productId}`);
+                } else {
+                    const products = await apiRequest('/api/products');
+                    product = products.find(p => p.name === productName);
+                }
+            } catch (err) {
+                product = null;
+            }
+
             if (!product) { window.location.href = 'shop.html'; return; }
 
             currentProduct = product;
@@ -253,7 +263,7 @@
             // Materials
             const materials = product.materials || ['100% cotton yarn', 'Hypoallergenic stuffing', 'Metal keyring / clasp', 'Handstitched details'];
             document.getElementById('product-materials').innerHTML = materials.map(m =>
-                `<li><i class="fa-solid fa-check"></i> ${m}</li>`).join('');
+                `<li><i class="fa-solid fa-check"></i> ${escapeHtml(m)}</li>`).join('');
 
             // Images
             const images = product.images && product.images.length > 0 ? product.images : [product.image];
@@ -318,19 +328,20 @@
                 `https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(msg)}`;
         }
 
-        function addProductToCart() {
+        async function addProductToCart() {
             if (!currentProduct) return;
-            const label = `${currentProduct.name} (${currentColor.charAt(0).toUpperCase() + currentColor.slice(1)})`;
-            for (let i = 0; i < currentQty; i++) {
-                addToCart(label, parseFloat(currentProduct.price));
-            }
-            showToast(`Added ${currentQty}× ${currentProduct.name} to cart `);
+            await addToCart(currentProduct._id, currentColor, currentQty);
         }
 
         // ── Also Like ──────────────────────────────────────
-        function loadAlsoLike(currentProd) {
-            const adminProducts = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-            const allProducts   = [...DEFAULT_PRODUCTS, ...adminProducts];
+        async function loadAlsoLike(currentProd) {
+            let allProducts = [];
+            try {
+                allProducts = await apiRequest('/api/products');
+            } catch (err) {
+                allProducts = [];
+            }
+
             let related = allProducts.filter(p => p.name !== currentProd.name && p.category === currentProd.category).slice(0, 4);
             if (related.length < 4) {
                 const others = allProducts.filter(p => p.name !== currentProd.name && p.category !== currentProd.category).slice(0, 4 - related.length);
@@ -339,10 +350,10 @@
             const grid = document.getElementById('also-like-grid');
             if (related.length === 0) { grid.parentElement.style.display = 'none'; return; }
             grid.innerHTML = related.map(p => `
-                <a href="product.html?name=${encodeURIComponent(p.name)}" class="also-like-card">
-                    <img src="${p.image || 'img/logo1.png'}" alt="${p.name}" onerror="this.src='img/logo1.png'">
+                <a href="product.html?id=${encodeURIComponent(p._id)}" class="also-like-card">
+                    <img src="${escapeHtml(p.image || 'img/logo1.png')}" alt="${escapeHtml(p.name)}" onerror="this.src='img/logo1.png'">
                     <div class="also-like-info">
-                        <h4>${p.name}</h4>
+                        <h4>${escapeHtml(p.name)}</h4>
                         <p>Tk ${parseFloat(p.price).toFixed(2)}</p>
                     </div>
                 </a>`).join('');

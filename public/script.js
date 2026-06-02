@@ -304,10 +304,10 @@ const DEFAULT_PRODUCTS = [
 
 
         // ── Add to cart with chosen color ─────────────────────────────
-        function addToCartWithColor(btn, name, price) {
+        function addToCartWithColor(btn) {
             const card = btn.closest('.pro');
             const chosenColor = card.querySelector('.chosen-color').textContent;
-            addToCart(`${name} (${chosenColor})`, price);
+            addToCart(btn.dataset.productId, chosenColor);
         }
 
         // ── Filter logic ──────────────────────────────────────────────
@@ -415,20 +415,58 @@ function applyFilters() {
         
 //--------------------------------------
 // ADD TO CART
-function addToCart(name, price) {
-    let cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
+async function apiRequest(path, options = {}) {
+    const { headers = {}, ...rest } = options;
+    const res = await fetch(path, {
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            ...headers
+        },
+        ...rest
+    });
 
-    const existing = cart.find(item => item.name === name);
-    if (existing) {
-        existing.qty += 1;
-    } else {
-        cart.push({ name, price, qty: 1 });
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(data?.message || 'Request failed.');
     }
 
-    localStorage.setItem('munchkin-cart', JSON.stringify(cart));
+    return data;
+}
 
-    // Show a quick toast notification
-    showToast(`"${name}" added to cart successfully!`);
+function escapeHtml(value = '') {
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function addToCart(productId, color = '', qty = 1) {
+    if (!productId) {
+        showToast('This product needs to be saved in MongoDB before it can be added to cart.');
+        return false;
+    }
+
+    try {
+        await apiRequest('/api/cart/items', {
+            method: 'POST',
+            body: JSON.stringify({ productId, color, qty })
+        });
+        showToast('Added to cart successfully!');
+        return true;
+    } catch (err) {
+        if (err.message.toLowerCase().includes('authorized')) {
+            alert('Please log in to add items to your cart.');
+            window.location.href = 'login.html';
+            return false;
+        }
+
+        showToast(err.message || 'Could not add item to cart.');
+        return false;
+    }
 }
 
 // TOAST NOTIFICATION
@@ -492,42 +530,45 @@ document.addEventListener('click', function(e) {
 // =====================
 
 // Shows Login or user's name + Logout in navbar dynamically
-function updateNavAuth() {
+async function updateNavAuth() {
     const navbar = document.getElementById('navbar');
     if (!navbar) return;
 
-    // Remove existing auth li if any
     const existingAuth = document.getElementById('nav-auth');
     if (existingAuth) existingAuth.remove();
 
-    const session = JSON.parse(localStorage.getItem('munchkin-session'));
     const li = document.createElement('li');
     li.id = 'nav-auth';
 
-    if (session) {
-        // Logged in
+    let user = null;
+    try {
+        user = (await apiRequest('/api/auth/me')).user;
+    } catch (err) {
+        user = null;
+    }
+
+    if (user) {
         li.innerHTML = `
             <div class="nav-user-menu">
                 <span class="nav-username">
-                    <i class="fa-solid fa-user"></i> ${session.name.split(' ')[0]}
+                    <i class="fa-solid fa-user"></i> ${escapeHtml((user.name || 'User').split(' ')[0])}
                     <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
                 </span>
                 <ul class="nav-user-dropdown">
-                    ${session.role === 'admin' ? '<li><a href="admin.html"><i class="fa-solid fa-gauge"></i> Admin Panel</a></li>' : ''}
+                    ${user.role === 'admin' ? '<li><a href="admin.html"><i class="fa-solid fa-gauge"></i> Admin Panel</a></li>' : ''}
                     <li><a href="#" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
                 </ul>
             </div>
         `;
     } else {
-        // Not logged in
         li.innerHTML = `<a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Login</a>`;
     }
 
     navbar.appendChild(li);
 }
 
-function logoutUser() {
-    localStorage.removeItem('munchkin-session');
+async function logoutUser() {
+    await apiRequest('/api/auth/logout', { method: 'POST' }).catch(() => null);
     window.location.href = 'index.html';
 }
 
@@ -539,18 +580,28 @@ updateNavAuth();
 // (Products are clickable — go to product.html)
 // =====================================================
  
-function renderShopProducts() {
+async function renderShopProducts() {
     const grid = document.getElementById('shopGrid');
     if (!grid) return;
- 
-    const adminProducts = JSON.parse(localStorage.getItem('munchkin-products')) || [];
-    const allProducts   = [...DEFAULT_PRODUCTS, ...adminProducts];
+
+    let allProducts = [];
+    try {
+        allProducts = await apiRequest('/api/products');
+    } catch (err) {
+        grid.innerHTML = '<p class="empty-row">Could not load products. Please try again later.</p>';
+        return;
+    }
  
     const colorMap = {
         pink: '#ff869c', white: '#f5f5f5', blue: '#a8d8ea',
         yellow: '#ffd166', green: '#b5ead7', purple: '#c3b1e1',
         brown: '#c8a882', red: '#ff6b6b', black: '#333333', orange: '#ffb347'
     };
+
+    if (allProducts.length === 0) {
+        grid.innerHTML = '<p class="empty-row">No products available yet.</p>';
+        return;
+    }
  
     grid.innerHTML = allProducts.map(p => {
         const colors     = p.colors ? p.colors.split(',').map(c => c.trim()) : [];
@@ -566,34 +617,25 @@ function renderShopProducts() {
                     </span>`;
         }).join('');
  
-        // Get average rating
-        const reviews = JSON.parse(localStorage.getItem(`reviews-${p.name}`)) || [];
-        const avgRating = reviews.length
-            ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
-            : null;
-        const ratingHtml = avgRating
-            ? `<p class="card-rating"><i class="fa-solid fa-star" style="color:#f4a637;font-size:11px;"></i> ${avgRating} (${reviews.length})</p>`
-            : '';
- 
         return `
             <div class="pro"
-                data-category="${p.category}"
-                data-price="${p.price}"
-                data-colors="${p.colors || ''}"
-                onclick="window.location.href='product.html?name=${encodeURIComponent(p.name)}'">
-                <img src="${p.image || 'img/logo1.png'}" alt="${p.name}"
+                data-category="${escapeHtml(p.category)}"
+                data-price="${Number(p.price)}"
+                data-colors="${escapeHtml(p.colors || '')}"
+                onclick="window.location.href='product.html?id=${encodeURIComponent(p._id)}'">
+                <img src="${escapeHtml(p.image || 'img/logo1.png')}" alt="${escapeHtml(p.name)}"
                      onerror="this.src='img/logo1.png'">
                 <div class="des">
-                    <span class="category-tag">${p.category.charAt(0).toUpperCase() + p.category.slice(1)}</span>
-                    <h4>${p.name}</h4>
+                    <span class="category-tag">${escapeHtml(p.category.charAt(0).toUpperCase() + p.category.slice(1))}</span>
+                    <h4>${escapeHtml(p.name)}</h4>
                     <p class="price">Tk ${parseFloat(p.price).toFixed(2)}</p>
-                    ${ratingHtml}
                     <div class="color-picker" onclick="event.stopPropagation()">
-                        <p class="color-label">Color: <span class="chosen-color">${firstColor.charAt(0).toUpperCase() + firstColor.slice(1)}</span></p>
+                        <p class="color-label">Color: <span class="chosen-color">${escapeHtml(firstColor.charAt(0).toUpperCase() + firstColor.slice(1))}</span></p>
                         <div class="color-options">${colorDots}</div>
                     </div>
                     <button class="add-to-cart"
-                        onclick="event.stopPropagation(); addToCartWithColor(this, '${p.name}', ${p.price})">
+                        data-product-id="${escapeHtml(p._id)}"
+                        onclick="event.stopPropagation(); addToCartWithColor(this)">
                         <i class="fa-solid fa-cart-plus"></i> Add to Cart
                     </button>
                 </div>
@@ -643,8 +685,7 @@ renderShopProducts();
 
 
 function getCurrentSubtotal() {
-    const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-    return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    return 0;
 }
 
 function getShippingCost() {
@@ -655,22 +696,7 @@ function getShippingCost() {
     return 60;
 }
 function checkout() {
-    const session = JSON.parse(localStorage.getItem('munchkin-session'));
-
-    // If not logged in, redirect to login first
-    if (!session) {
-        alert('Please log in to place your order');
-        window.location.href = 'login.html';
-        return;
-    }
-
-    const cart = JSON.parse(localStorage.getItem('munchkin-cart')) || [];
-    if (cart.length === 0) {
-        alert('Your cart is empty!');
-        return;
-    }
-
-    alert('Thank you for your order! We will contact you via WhatsApp to confirm.');
+    window.location.href = 'cart.html';
 }
 // Updated updateSummary — REPLACE your existing one in cart.html
 function updateSummary(subtotal) {
@@ -687,20 +713,5 @@ function updateSummary(subtotal) {
 // ── ADMIN: Update Order Status ────────────────────────
 // (Already in admin.html — this helper notifies customer)
 function notifyCustomer(orderId, status) {
-    const orders = JSON.parse(localStorage.getItem('munchkin-orders')) || [];
-    const order  = orders.find(o => String(o.id) === String(orderId));
-    if (!order) return;
-
-    const messages = {
-        'Processing': `Hi ${order.customer}! Your munchkin.cro order #${orderId} is now being crafted. We'll update you when it ships!`,
-        'Shipped':    `Hi ${order.customer}! Your munchkin.cro order #${orderId} has been shipped! Expected delivery in a few days.`,
-        'Completed':  `Hi ${order.customer}! Your order #${orderId} has been delivered! We hope you love it. Please leave us a review at munchkin.cro`,
-        'Cancelled':  `Hi ${order.customer}, your munchkin.cro order #${orderId} has been cancelled. Please contact us if you have questions.`
-    };
-
-    const msg = messages[status];
-    if (msg && order.phone) {
-        const phone = order.phone.replace(/\D/g, '');
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-    }
+    console.warn('notifyCustomer is handled by admin.html', orderId, status);
 }
