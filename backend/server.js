@@ -8,8 +8,12 @@ dotenv.config();
 
 const app = express();
 
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
+
 // ── Middleware ──
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -22,6 +26,7 @@ app.use('/api/auth',          require('./routes/auth'));
 app.use('/api/products',      require('./routes/products'));
 app.use('/api/orders',        require('./routes/orders'));
 app.use('/api/custom-orders', require('./routes/customOrders'));
+app.use('/api/cart',          require('./routes/cart'));
 
 // ── Fallback ── (fixed wildcard for newer Express)
 app.use((req, res) => {
